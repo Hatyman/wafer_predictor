@@ -1,6 +1,4 @@
 import pymysql.cursors
-from src.classes import machine_class
-
 
 
 # Функция подключения к бд
@@ -20,11 +18,11 @@ def connection(pwd='91xz271999'):
 def conn_decorator(func):
 
     def wrapper():  # Сама обертка
-        conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        conn = connection('')  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
 
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
-
+                dict = {}
                 dict = func (cursor)
 
         finally:  # Закрытие подключения выполнится в любом случае вконце
@@ -37,7 +35,7 @@ def conn_decorator(func):
 def conn_decorator_method(func):
 
     def wrapper(self):  # Сама обертка
-        conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        conn = connection('')  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
 
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
@@ -52,6 +50,7 @@ def conn_decorator_method(func):
 # Функция создания словаря всей партий parts_set
 @conn_decorator  # Декоратор подключения к бд
 def create_parts(cursor=None):
+    from src.classes import part_class
     inner_parts_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
     sql = "SELECT * FROM `sosable_v0.6`.part"
@@ -66,8 +65,10 @@ def create_parts(cursor=None):
 
     return inner_parts_set
 
+
 @conn_decorator
 def create_machines(cursor=None):
+    from src.classes import part_class
     inner_machines_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
     sql = "SELECT * FROM `sosable_v0.6`.machines"
@@ -77,8 +78,9 @@ def create_machines(cursor=None):
     for row in res:  # Обходим то, что получили
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
         machines_id, lost1, name, broken = row
+        print(row['machines_id'], row['work_stream_number'], row['broken'])
         # Динамически создаем объекты партий
-        inner_machines_set[row['machines_id']] = machine_class.Machine('123','123456', '2345')
+        inner_machines_set[row['machines_id']] = part_class.Machine(row['machines_id'], row['work_stream_number'], row['broken'])
     return inner_machines_set
 
 
