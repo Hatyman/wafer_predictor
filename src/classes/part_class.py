@@ -36,7 +36,7 @@ class Part:
         if self.time_limit:
             # Проверяем осталось ли МВХ
             if self.least_tl > (1 / 3):
-                self.least_tl -= 1/3
+                self.least_tl -= 1 / 3
             else:
                 print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2}".format(self.part_id, self.act_process,
                                                                                          self.recipe_id))
@@ -61,5 +61,19 @@ class Part:
         self.further_time = res['time_of_process']
 
     # Функция обновления всех (или не всех) параметров партии
-    def update_attr(self):
+    @functions.conn_decorator_method
+    def update_attr(self, cursor=None):
+
+        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `sosable_v0.6`.part WHERE part_id={0}".format(self.part_id)
+        cursor.execute(sql)
+        res = cursor.fetchone()
+
+        self.act_process = res['act_process']
+        self.queue = res['queue']
+        self.wait = res['wait']
+        self.reserve = res['reserve']
+        self.recipe_id = res['recipe_id']
+
+    def estimate(self):
         pass
+
