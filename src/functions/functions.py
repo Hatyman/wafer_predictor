@@ -68,7 +68,7 @@ def create_parts(cursor=None):
 
 @conn_decorator
 def create_machines(cursor=None):
-    from src.classes import part_class
+    from src.classes import machine_class
     inner_machines_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
     sql = "SELECT * FROM `sosable_v0.6`.machines"
@@ -77,11 +77,12 @@ def create_machines(cursor=None):
 
     for row in res:  # Обходим то, что получили
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
-        machines_id, lost1, name, broken = row
-        print(row['machines_id'], row['work_stream_number'], row['broken'])
         # Динамически создаем объекты партий
-        inner_machines_set[row['machines_id']] = part_class.Machine(row['machines_id'], row['work_stream_number'], row['broken'])
+        inner_machines_set[row['machines_id']] = machine_class.Machine(row['machines_id'], row['work_stream_number'], row['broken'])
     return inner_machines_set
+
+
+
 
 
 

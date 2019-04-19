@@ -16,19 +16,22 @@ class Part:
         self.least_tl = 0.0
         self.value = 0.0
         self.further_time = 0
+        self.current_entity = 0
         self.get_other_params()
         self.observe_next_entity()
         print('Создана партия с id {0}: {1} [list_id: {2}]'.format(self.part_id, self.name, self.list_id))
 
-    # Функция получения МВХ
+    # Функция получения МВХ и установки, где партии сейчас надо быть
     @functions.conn_decorator_method
     def get_other_params(self, cursor=None):
-        sql = "SELECT time_limit FROM `sosable_v0.6`.recipe WHERE recipe_id = {0}".format(self.recipe_id)
+        sql = "SELECT time_limit, m.machines_id FROM `sosable_v0.6`.recipe r INNER JOIN `sosable_v0.6`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `sosable_v0.6`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
+            self.recipe_id)
         cursor.execute(sql)
         res = cursor.fetchone()
 
         self.time_limit = res['time_limit']
         self.least_tl = res['time_limit']
+        self.current_entity = res['machines_id']
 
     # Функция изменения оставшегося МВХ (на 20 минут) и сигнализирования, если МВХ истекает
     def dying(self):
@@ -60,11 +63,12 @@ class Part:
 
         self.further_time = res['time_of_process']
 
-    # Функция обновления всех (или не всех) параметров партии
+    # Функция обновления всех (которые могут изменяться) параметров партии
     @functions.conn_decorator_method
     def update_attr(self, cursor=None):
 
-        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `sosable_v0.6`.part WHERE part_id={0}".format(self.part_id)
+        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `sosable_v0.6`.part WHERE part_id={0}".format(
+            self.part_id)
         cursor.execute(sql)
         res = cursor.fetchone()
 
@@ -73,48 +77,9 @@ class Part:
         self.wait = res['wait']
         self.reserve = res['reserve']
         self.recipe_id = res['recipe_id']
+        self.observe_next_entity()
+        self.get_other_params()
 
+    # Функция рассчета веса партии (пока пустая)
     def estimate(self):
         pass
-
-
-# Завтра еще подредачу, не помню что еще нужно добавить
-class Machine:
-    # Конструктор установок
-    def __init__(self, machine_id, name, broken):
-        self.machine_id = machine_id
-        self.name = name
-        self.queue = {}
-        self.broken = broken
-        self.recipe_id = 0
-        # self.get_recipe()
-        # self.get_queue()
-        # self.set_recipe()
-        print('Создана установка с id: {0}, recipe_id: {1} name: {2}]'.format(self.machine_id, self.recipe_id, self.name))
-
-    # Функция получения рецепта на установке, если мы будем цеплять его с бд (бд надо доработать)
-    @functions.conn_decorator_method
-    def get_recipe(self, cursor=None):
-        sql = "SELECT recipe_on FROM `sosable_v0.6`.machines WHERE machine_id = {0}".format(self.machine_id)
-        cursor.execute(sql)
-        result = cursor.fetchone()
-        self.recipe_id = result['recipe_on']
-
-    # Функция получения очереди на установку
-    @functions.conn_decorator_method
-    def get_queue(self, cursor=None):
-        try:
-            sql = "CALL `sosable_v0.6`.`queue`('{0}')".format(self.name)
-            cursor.execute(sql)
-            result = cursor.fetchone()
-            # По идее я ходу увидеть полноценную очередь, но не знаю, какой вывод будет точно
-            self.queue = [result['part_id'], result['recipe_id']]
-        except Exception:
-            print('Твою мать, она не работает, мб ошибка в данных ', Exception)
-
-    # Функция изменения рецепта на установку по первой партии в очереди
-    def set_recipe(self):
-        self.recipe_id = self.queue[0][1]
-        print('Установлен рецепт: {0} на установке: {1}'.format(self.recipe_id, self.machine_id))
-
-

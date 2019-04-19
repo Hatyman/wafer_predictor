@@ -7,13 +7,14 @@ class Machine:
     def __init__(self, machine_id, name, broken):
         self.machine_id = machine_id
         self.name = name
-        self.queue = {}
+        self.queue = []
         self.broken = broken
         self.recipe_id = 0
-        self.get_recipe()
-        self.get_queue()
-        self.set_recipe()
-        print('Создана установка с id: {0}, recipe_id: {1} name: {2}]'.format(self.machine_id, self.recipe_id, self.name))
+        self.forbidden = False
+        # self.get_recipe()
+        # self.get_queue()
+        # self.set_recipe()
+        print('Создана установка с id: {0}, recipe_id: {1} name: {2}'.format(self.machine_id, self.recipe_id, self.name))
 
     # Функция получения рецепта на установке, если мы будем цеплять его с бд (бд надо доработать)
     @functions.conn_decorator_method
@@ -39,4 +40,5 @@ class Machine:
     def set_recipe(self):
         self.recipe_id = self.queue[0][1]
         print('Установлен рецепт: {0} на установке: {1}'.format(self.recipe_id, self.machine_id))
+
 
