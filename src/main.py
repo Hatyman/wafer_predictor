@@ -7,13 +7,30 @@ def sort_by_value(part):
 
 
 # Функция глобальной оптимизации
-def global_optimize():
+@functions.conn_decorator
+def global_optimize(cursor=None):
     # Для возможности изменения
     global parts_set
     global machine_set
     global heap
     # Смотрим все партии, ищем мвхшные
     for item in parts_set:
+        needs_to_print = False
+        # Удаляем партии с предыдущих установок
+        for prev_mach in parts_set[item].prev_entity:
+            try:
+                machine_set[prev_mach].queue.remove(parts_set[item].part_id)
+            except ValueError:
+                needs_to_print = True
+        if needs_to_print:
+            print("Партия id {0} {1} засиделась без места в очереди на установку {2} с id {3}".format(
+                parts_set[item].part_id,
+                parts_set[item].name,
+                machine_set[parts_set[item].current_entity].name,
+                machine_set[parts_set[item].current_entity].machine_id
+            ))
+
+        # Обновим все данные о партии
         parts_set[item].update_attr()
         # Отделяем только те мвхшные партии, которых еще нет в очередях
         if (parts_set[item].part_id not in machine_set[parts_set[item].current_entity].queue) and parts_set[item].time_limit:
@@ -37,28 +54,40 @@ def global_optimize():
 
     # Сначала ищем партии, у которых появится МВХ, затем распихиваем обычные
     for item in heap:
-        pass
+        needs_to_stop = False
+        i = 0
+        while not needs_to_stop:
+            sql = "SELECT time_limit, machines_machines_id, recipe_id FROM `sosable_v0.6`.recipe r INNER JOIN `sosable_v0.6`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id WHERE r.recipe_id = (SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id={1})".format(
+                int(parts_set[item].act_process) + i,
+                parts_set[item].list_id
+            )
+            cursor.execute(sql)
+            res = cursor.fetchall()
+            for next_mach in res:
+                if not next_mach['time_limit']:
+                    needs_to_stop = True
+                else:
+                    i += 1
+                    # Здесь надо ставить флаг запрета (но если он возвращает несколько установок, то какой запрещать?
+            # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
+            # print(res, parts_set[item].part_id, needs_to_stop)
 
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий
 machine_set = functions.create_machines()  # Вызываем функцию создания партий
 heap = []  # Пул
 
-global_optimize()
-
 # Тест сортировки
 parts_set[14].value = 0.7
 parts_set[5].value = 0.7
 parts_set[8].value = 0.8
 parts_set[3].value = 0.7
-parts_set[3].value = 0.7
-test = [14, 5, 8, 3]
-print(test)
-test.sort(key=sort_by_value, reverse=True)
-print(test)
+parts_set[10].value = 0.2
+# test = [14, 3, 8, 5, 10]
+# print(test)
+# test.sort(key=sort_by_value, reverse=True)
+# print(test)
 
+global_optimize()
 print(heap)
-
-
-
 
