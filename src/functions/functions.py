@@ -18,7 +18,10 @@ def connection(pwd='91xz271999'):
 def conn_decorator(func):
 
     def wrapper():  # Сама обертка
-        conn = connection('')  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        try:
+            conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        except pymysql.err.OperationalError:
+            conn = connection('')
 
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
@@ -35,7 +38,10 @@ def conn_decorator(func):
 def conn_decorator_method(func):
 
     def wrapper(self):  # Сама обертка
-        conn = connection('')  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        try:
+            conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+        except pymysql.err.OperationalError:
+            conn = connection('')
 
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев

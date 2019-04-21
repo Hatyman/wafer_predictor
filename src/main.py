@@ -7,7 +7,7 @@ def global_optimize():
     global parts_set
     global machine_set
     # Смотрим все партии, ищем мвхшные
-    for item in parts_set:
+    for item in parts_set:  
         parts_set[item].update_attr()
         # Отделяем только те мвхшные партии, которых еще нет в очередях
         if (parts_set[item].part_id not in machine_set[parts_set[item].current_entity].queue) and parts_set[item].time_limit and (not machine_set[parts_set[item].current_entity].forbidden):
