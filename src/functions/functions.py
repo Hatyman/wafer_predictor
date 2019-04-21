@@ -92,4 +92,3 @@ def create_machines(cursor=None):
 
 
 
-
