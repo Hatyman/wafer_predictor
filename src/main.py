@@ -63,14 +63,36 @@ def global_optimize(cursor=None):
             )
             cursor.execute(sql)
             res = cursor.fetchall()
+
             for next_mach in res:
+                # print(next_mach, parts_set[item].part_id, needs_to_stop, i)
                 if not next_mach['time_limit']:
                     needs_to_stop = True
+                    break
                 else:
                     i += 1
+                    min_time_queue = 999
+                    ent_id = -1
+                    for ent in res:
+                        time_queue = 0
+                        for items_queue in machine_set[ent['machines_machines_id']].queue:
+                            time_queue += parts_set[items_queue].time_of_process
+                        if (time_queue < min_time_queue) and (not machine_set[ent['machines_machines_id']].forbidden):
+                            ent_id = ent['machines_machines_id']
+                            min_time_queue = time_queue
+                            # print(parts_set[item].part_id, min_time_queue, ent_id)
+                    if ent_id > 0:
+                        machine_set[ent_id].forbidden = True
+                        print("Машина {0} c id {1} заблокирована для партии {2} c id {3}".format(
+                            machine_set[ent_id].name,
+                            ent_id,
+                            parts_set[item].name,
+                            parts_set[item].part_id
+                        ))
+                    break
                     # Здесь надо ставить флаг запрета (но если он возвращает несколько установок, то какой запрещать?
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
-            # print(res, parts_set[item].part_id, needs_to_stop)
+            # print(res, parts_set[item].part_id, needs_to_stop, i)
 
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий

@@ -16,9 +16,11 @@ class Part:
         self.least_tl = 0.0
         self.value = 0.0
         self.further_time = 0
+        self.time_of_process = 0
         self.current_entity = 0
         self.prev_entity = []
         self.get_other_params()
+        self.get_current_time()
         self.get_prev_entity()
         self.observe_next_entity()
         print('Создана партия с id {0}: {1} [list_id: {2}]'.format(self.part_id, self.name, self.list_id))
@@ -82,6 +84,8 @@ class Part:
         self.observe_next_entity()
         self.get_prev_entity()
         self.get_other_params()
+        self.get_current_time()
+
 
     # Функция рассчета веса партии (пока пустая)
     def estimate(self):
@@ -106,3 +110,17 @@ class Part:
             self.prev_entity.append(item['machines_machines_id'])
             self.time_limit = item['time_limit']
             self.least_tl = item['time_limit']
+
+
+    # Функция получения времени выполнения текущего рецепта
+    @functions.conn_decorator_method
+    def get_current_time(self, cursor=None):
+        sql = "SELECT time_of_process FROM `sosable_v0.6`.recipe WHERE recipe_id={0}".format(
+            self.recipe_id
+        )
+        cursor.execute(sql)
+        res = cursor.fetchone()
+
+        self.time_of_process = res['time_of_process']
+        return self.time_of_process
+

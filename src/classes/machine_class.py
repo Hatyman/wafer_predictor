@@ -12,10 +12,10 @@ class Machine:
         self.recipe_id = 0
         self.forbidden = False
         self.endQueue = 0
-        self.get_recipe()
+        # self.get_recipe()
         # self.get_queue()
-        self.set_recipe()
-        self.group_recipe()
+        # self.set_recipe()
+        # self.group_recipe()
         print('Создана установка с id: {0}, recipe_id: {1} name: {2}'.format(self.machine_id, self.recipe_id, self.name))
 
     # Функция получения рецепта на установке, если мы будем цеплять его с бд (бд надо доработать)
@@ -62,6 +62,7 @@ class Machine:
         self.endQueue = first_recipe
 
     def transposition(self, part_set):
+        pass
 
 
     def local_optimizer(self, part_set):
