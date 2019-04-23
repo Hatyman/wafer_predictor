@@ -14,12 +14,12 @@ class Machine:
         self.endQueue = 0
         self.out_queue = []
         self.group_values = []
-        self.get_recipe()
-        self.set_recipe(part_set=[])
+        # self.get_recipe()
+        # self.set_recipe(part_set=[])
         # self.get_queue()
-        self.group_recipe(part_set=[])
-        self.transposition(part_set=[], group=[])
-        self.optimize_groups(group_values=[], group_has_values={})
+        # self.group_recipe(part_set=[])
+        # self.transposition(part_set=[], group=[])
+        # self.optimize_groups(group_values=[], group_has_values={})
         print('Создана установка с id: {0}, recipe_id: {1} '
               'name: {2}'.format(self.machine_id, self.recipe_id, self.name))
 
