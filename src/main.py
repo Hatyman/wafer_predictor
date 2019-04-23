@@ -1,5 +1,5 @@
 from src.functions import functions
-
+from itertools import groupby
 
 # Функция для сортировки пула по занчениею веса партии
 def sort_by_value(part):
@@ -109,7 +109,6 @@ parts_set[10].value = 0.2
 # print(test)
 # test.sort(key=sort_by_value, reverse=True)
 # print(test)
-
 global_optimize()
 print(heap)
 
