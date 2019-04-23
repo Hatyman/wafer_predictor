@@ -73,10 +73,12 @@ def global_optimize(cursor=None):
                         machine_set[parts_set[item].current_entity].in_queue.append(item)
                         tmp_heap.remove(item)
                     else:
-                        if not machine_set[parts_set[item].current_entity].forbidden:
-                            machine_set[parts_set[item].current_entity].in_queue.append(item)
-                            tmp_heap.remove(item)
-                    print("Выводим очередь на установку {0}, если партия куда-нибудь добавилась:".format(machine_set[parts_set[item].current_entity].machine_idz), machine_set[parts_set[item].current_entity].in_queue)
+                        for ent in res:
+                            if not machine_set[ent['machines_machines_id']].forbidden:
+                                machine_set[ent['machines_machines_id']].in_queue.append(item)
+                                parts_set[item].current_entity = ent['machines_machines_id']
+                                tmp_heap.remove(item)
+                    print("Выводим очередь на установку {0}, если партия куда-нибудь добавилась:".format(machine_set[parts_set[item].current_entity].machine_id), machine_set[parts_set[item].current_entity].in_queue)
                     needs_to_stop = True
                     break
                 else:
