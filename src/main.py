@@ -1,5 +1,4 @@
 from src.functions import functions
-from itertools import groupby
 
 # Функция для сортировки пула по занчениею веса партии
 def sort_by_value(part):

@@ -14,10 +14,10 @@ class Machine:
         self.endQueue = 0
         self.out_queue = []
         self.group_values = []
-        self.get_recipe()
-        self.set_recipe(part_set=[])
+        #self.get_recipe()
+        #self.set_recipe(part_set=[])
         # self.get_queue()
-        self.group_recipe(part_set=[])
+        #self.group_recipe(part_set=[])
         self.transposition(part_set=[], group=[])
         self.optimize_groups(group_values=[], group_has_values={})
         print('Создана установка с id: {0}, recipe_id: {1} '
@@ -48,26 +48,29 @@ class Machine:
         group_values = []
         grouped_queue = []
         amount_of_grouped = 0
-        for i in range(recipes_count):  # Устанавлеваем порядок очереди по группам
-            value = part_set[amount_of_grouped].value
-            group = [self.in_queue[amount_of_grouped]]
-            for j in range(len(self.in_queue)):
-                if part_set[amount_of_grouped].recipe_id == part_set[j].recipe_id:
-                    group.append(self.in_queue[j])
-                    amount_of_grouped += 1
-                    value += part_set[j].value
-            mean_value = value / amount_of_grouped
-            amount_of_grouped += 1
-            if len(group) > 1:
-                self.in_queue = grouped_queue.append(self.transposition(part_set, group))
-            else:
-                self.in_queue = grouped_queue.append(group)
-            group_values.append(mean_value)
-        group_has_values = dict.fromkeys(group_values)
-        count = 0
-        for k in group_values:
-            group_has_values[k] = self.in_queue[count]
-            count += 1
+        if self.in_queue != None:
+            for i in range(recipes_count):  # Устанавлеваем порядок очереди по группам
+                value = part_set[amount_of_grouped].value
+                group = [self.in_queue[amount_of_grouped]]
+                for j in range(len(self.in_queue)):
+                    if part_set[amount_of_grouped].recipe_id == part_set[j].recipe_id:
+                        group.append(self.in_queue[j])
+                        amount_of_grouped += 1
+                        value += part_set[j].value
+                mean_value = value / amount_of_grouped
+                amount_of_grouped += 1
+                if len(group) > 1:
+                    self.in_queue = grouped_queue.append(self.transposition(part_set, group))
+                else:
+                    self.in_queue = grouped_queue.append(group)
+                group_values.append(mean_value)
+            group_has_values = dict.fromkeys(group_values)
+            count = 0
+            for k in group_values:
+                group_has_values[k] = self.in_queue[count]
+                count += 1
+        else:
+            print('Нет очереди')
         return group_values, group_has_values
 
     def transposition(self, part_set, group):
@@ -89,4 +92,4 @@ class Machine:
 
     def local_optimizer(self, part_set):
         group_values, group_has_values = self.group_recipe(part_set)
-        self.optimize_groups(part_set, group_values, group_has_values)
+        self.optimize_groups(group_values, group_has_values)
