@@ -14,6 +14,8 @@ class Machine:
         self.endQueue = 0
         self.out_queue = []
         self.group_values = []
+        self.recipes_count = None
+        self.get_groups()
         # self.get_recipe()
         # self.set_recipe(part_set=[])
         # self.get_queue()
@@ -40,43 +42,55 @@ class Machine:
         self.forbidden = not self.forbidden
 
     @functions.conn_decorator_method
-    def group_recipe(self, part_set, cursor=None):
+    def get_groups(self, cursor=None):
         sql = "SELECT count(machines_has_recipe.recipe_recipe_id) FROM `sosable_v0.6`." \
-              "machines_has_recipe WHERE machines_machines_id = 1;".format(self.machine_id)
+              "machines_has_recipe WHERE machines_machines_id = {0};".format(self.machine_id)
         cursor.execute(sql)
-        recipes_count = cursor.fetchone()  # запрашиваем количество возможных групп на установке
+        self.recipes_count = cursor.fetchone()
+        self.recipes_count = self.recipes_count['count(machines_has_recipe.recipe_recipe_id)']
+
+    def group_recipe(self, part_set):
         group_values = []
         grouped_queue = []
+        group_has_values = {}
         amount_of_grouped = 0
-        for i in range(recipes_count):  # Устанавлеваем порядок очереди по группам
-            value = part_set[amount_of_grouped].value
-            group = [self.in_queue[amount_of_grouped]]
-            for j in range(len(self.in_queue)):
-                if part_set[amount_of_grouped].recipe_id == part_set[j].recipe_id:
-                    group.append(self.in_queue[j])
-                    amount_of_grouped += 1
-                    value += part_set[j].value
-            mean_value = value / amount_of_grouped
-            amount_of_grouped += 1
-            if len(group) > 1:
-                self.in_queue = grouped_queue.append(self.transposition(part_set, group))
-            else:
-                self.in_queue = grouped_queue.append(group)
-            group_values.append(mean_value)
-        group_has_values = dict.fromkeys(group_values)
-        count = 0
-        for k in group_values:
-            group_has_values[k] = self.in_queue[count]
-            count += 1
+        if len(self.in_queue) > 1:
+            for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по группам
+                value = part_set[self.in_queue[amount_of_grouped]].value
+                group = []
+                for j in self.in_queue:
+                    if part_set[self.in_queue[amount_of_grouped]].recipe_id == part_set[j].recipe_id:
+                        group.append(j)
+                        amount_of_grouped += 1
+                        value += part_set[j].value
+                mean_value = value / amount_of_grouped
+                amount_of_grouped += 1
+                if len(group) > 1:
+                    self.in_queue = grouped_queue.append(self.transposition(part_set, group))
+                else:
+                    self.in_queue = grouped_queue.append(group)
+                group_values.append(mean_value)
+            group_has_values = dict.fromkeys(group_values)
+            count = 0
+            for k in group_values:
+                group_has_values[k] = self.in_queue[count]
+                count += 1
+        elif len(self.in_queue) == 1:
+            count = 0
+            group_values.append(part_set[self.in_queue[0]].value)
+            for k in group_values:
+                group_has_values[k] = self.in_queue[count]
+                count += 1
+
         return group_values, group_has_values
 
     def transposition(self, part_set, group):
         sorted_group = []
         if len(group) > 1:
             maxi = part_set[group[0]].value
-            for i in range(len(group)):
+            for i in group:
                 for j in range(len(group)):
-                    if part_set[i].value < part_set[j].value:
+                    if part_set[i].value < part_set[group[j]].value:
                         maxi = part_set[j].value
                 sorted_group.append(maxi)
         return sorted_group
@@ -87,6 +101,13 @@ class Machine:
             self.in_queue[i] = group_has_values[group_values[i]]
         self.out_queue.extend(self.in_queue)
 
+    def send_to_database(self):
+        pass
+
     def local_optimizer(self, part_set):
-        group_values, group_has_values = self.group_recipe(part_set)
-        self.optimize_groups(part_set, group_values, group_has_values)
+        print('ccc')
+        if len(self.in_queue) > 0:
+            print('aaa')
+            group_values, group_has_values = self.group_recipe(part_set)
+            print('bbb')
+            self.optimize_groups(group_values, group_has_values)

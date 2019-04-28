@@ -16,7 +16,6 @@ def connection(pwd='91xz271999'):
 
 # Декоратор на подключение к БД для функций
 def conn_decorator(func):
-
     def wrapper():  # Сама обертка
         try:
             conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
@@ -26,17 +25,17 @@ def conn_decorator(func):
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
                 dict = {}
-                dict = func (cursor)
+                dict = func(cursor)
 
         finally:  # Закрытие подключения выполнится в любом случае вконце
             conn.close()
             return dict
+
     return wrapper
 
 
 # Декоратор на подключение к БД для методов
 def conn_decorator_method(func):
-
     def wrapper(self):  # Сама обертка
         try:
             conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
@@ -46,10 +45,11 @@ def conn_decorator_method(func):
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
 
-                func (self, cursor)
+                func(self, cursor)
 
         finally:  # Закрытие подключения выполнится в любом случае вконце
             conn.close()
+
     return wrapper
 
 
@@ -67,7 +67,8 @@ def create_parts(cursor=None):
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
         part_id, name, list_id, act_process, queue, reserve, wait, recipe_id = row
         # Динамически создаем объекты партий
-        inner_parts_set[row['part_id']] = part_class.Part(row[part_id], row[name], row[list_id], row[act_process], row[queue], row[reserve], row[wait], row[recipe_id])
+        inner_parts_set[row['part_id']] = part_class.Part(row[part_id], row[name], row[list_id], row[act_process],
+                                                          row[queue], row[reserve], row[wait], row[recipe_id])
 
     return inner_parts_set
 
@@ -84,9 +85,11 @@ def create_machines(cursor=None):
     for row in res:  # Обходим то, что получили
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
         # Динамически создаем объекты партий
-        inner_machines_set[row['machines_id']] = machine_class.Machine(row['machines_id'], row['work_stream_number'], row['broken'])
+        inner_machines_set[row['machines_id']] = machine_class.Machine(row['machines_id'], row['work_stream_number'],
+                                                                       row['broken'])
     return inner_machines_set
 
 
-
-
+def local_optimization(machines_set, part_set):
+    for machine in machines_set:
+        machines_set[machine].local_optimizer(part_set)

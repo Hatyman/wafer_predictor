@@ -106,8 +106,9 @@ def global_optimize(cursor=None):
                     i += 1
                     break
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
-            # print(res, parts_set[item].part_id, needs_to_stop, i)
+            print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
+
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий
 machine_set = functions.create_machines()  # Вызываем функцию создания партий
@@ -123,7 +124,14 @@ parts_set[10].value = 0.2
 # print(test)
 # test.sort(key=sort_by_value, reverse=True)
 # print(test)
+a = 0
+a = machine_set[3].get_groups()
+print(a)
+
 global_optimize()
+for i in machine_set:
+    print(machine_set[i].in_queue)
+functions.local_optimization(machine_set, parts_set)
 print('-----')
 # print(machine_set[3].queue)
 # print(machine_set[3].forbidden)
