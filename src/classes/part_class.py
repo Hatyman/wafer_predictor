@@ -124,3 +124,7 @@ class Part:
         self.time_of_process = res['time_of_process']
         return self.time_of_process
 
+    @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
+    def send_queue(self, cursor=None):
+        sql = "UPDATE `sosable_v0.6`.part SET queue = %s WHERE part_id = %s"
+        cursor.execute(sql, (self.queue, self.part_id))

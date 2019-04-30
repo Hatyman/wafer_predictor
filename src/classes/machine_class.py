@@ -49,13 +49,15 @@ class Machine:
         self.recipes_count = cursor.fetchone()
         self.recipes_count = self.recipes_count['count(machines_has_recipe.recipe_recipe_id)']
 
+    # Группировка партий по рецептам
+
     def group_recipe(self, part_set):
-        group_values = []
-        grouped_queue = []
-        group_has_values = {}
-        amount_of_grouped = 0
-        if len(self.in_queue) > 1:
-            for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по группам
+        group_values = []  # Список средней ценности всей группы
+        grouped_queue = []  # Сгруппированная очередь
+        group_has_values = {}  # Словарь для сопоставления группы партий и их ценности
+        amount_of_grouped = 0  # Количество сгруппированных партий
+        if len(self.in_queue) > 1:  # Группировка будет, только в случае если у нас есть что группировать
+            for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по количеству возможных групп
                 value = part_set[self.in_queue[amount_of_grouped]].value
                 group = []
                 for j in self.in_queue:
@@ -65,17 +67,18 @@ class Machine:
                         value += part_set[j].value
                 mean_value = value / amount_of_grouped
                 amount_of_grouped += 1
-                if len(group) > 1:
+                if len(group) > 1:  # Если группа состоит не из одной партии, то переставляем также партии в группах
                     self.in_queue = grouped_queue.append(self.transposition(part_set, group))
-                else:
+                else:  # Иначе просто идем дальше
                     self.in_queue = grouped_queue.append(group)
                 group_values.append(mean_value)
             group_has_values = dict.fromkeys(group_values)
             count = 0
-            for k in group_values:
+            for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
                 group_has_values[k] = self.in_queue[count]
                 count += 1
-        elif len(self.in_queue) == 1:
+        elif len(
+                self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
             count = 0
             group_values.append(part_set[self.in_queue[0]].value)
             for k in group_values:
@@ -84,7 +87,7 @@ class Machine:
 
         return group_values, group_has_values
 
-    def transposition(self, part_set, group):
+    def transposition(self, part_set, group):  # переставляем партии в группе, исходя из их ценности
         sorted_group = []
         if len(group) > 1:
             maxi = part_set[group[0]].value
@@ -95,14 +98,18 @@ class Machine:
                 sorted_group.append(maxi)
         return sorted_group
 
-    def optimize_groups(self, group_values, group_has_values):
+    def optimize_groups(self, group_values, group_has_values):  # Переставляем группы исходя из их ценности
         group_values = sorted(group_values, reverse=True)
         for i in range(len(self.in_queue)):
             self.in_queue[i] = group_has_values[group_values[i]]
         self.out_queue.extend(self.in_queue)
 
-    def send_to_database(self):
-        pass
+    def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии
+        count = 0
+        for i in range(len(self.out_queue)):
+            for j in range(len(self.out_queue[i])):
+                part_set[self.out_queue[i][j]].queue = count
+                count += 1
 
     def local_optimizer(self, part_set):
         print('ccc')
@@ -111,3 +118,4 @@ class Machine:
             group_values, group_has_values = self.group_recipe(part_set)
             print('bbb')
             self.optimize_groups(group_values, group_has_values)
+            self.set_individual_queue(part_set)

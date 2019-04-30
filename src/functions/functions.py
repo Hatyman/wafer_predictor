@@ -90,6 +90,6 @@ def create_machines(cursor=None):
     return inner_machines_set
 
 
-def local_optimization(machines_set, part_set):
-    for machine in machines_set:
+def local_optimization(machines_set, part_set):  # Функция нужна для передачи в методы каждой
+    for machine in machines_set:  # машины сет партий и запуске в глобальном файле
         machines_set[machine].local_optimizer(part_set)
