@@ -112,10 +112,8 @@ class Machine:
                 count += 1
 
     def local_optimizer(self, part_set):
-        print('ccc')
         if len(self.in_queue) > 0:
-            print('aaa')
             group_values, group_has_values = self.group_recipe(part_set)
-            print('bbb')
             self.optimize_groups(group_values, group_has_values)
             self.set_individual_queue(part_set)
+            print(self.out_queue)

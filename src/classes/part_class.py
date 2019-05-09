@@ -19,6 +19,7 @@ class Part:
         self.time_of_process = 0
         self.current_entity = 0
         self.prev_entity = []
+        self.priority = 0
         self.get_other_params()
         self.get_current_time()
         self.get_prev_entity()
@@ -85,6 +86,7 @@ class Part:
         self.get_prev_entity()
         self.get_other_params()
         self.get_current_time()
+        self.calculate_value()
 
 
     # Функция рассчета веса партии (пока пустая)
@@ -128,3 +130,8 @@ class Part:
     def send_queue(self, cursor=None):
         sql = "UPDATE `sosable_v0.6`.part SET queue = %s WHERE part_id = %s"
         cursor.execute(sql, (self.queue, self.part_id))
+
+    def calculate_value(self):
+        k_mts = 10 * self.least_tl / self.time_limit
+        k_p = self.priority
+        self.value = k_mts + k_p

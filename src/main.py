@@ -129,6 +129,8 @@ a = machine_set[3].get_groups()
 print(a)
 
 global_optimize()
+for i in parts_set:
+    print(parts_set[i].value)
 for i in machine_set:
     print(machine_set[i].in_queue)
 functions.local_optimization(machine_set, parts_set)
