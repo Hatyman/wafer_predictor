@@ -66,12 +66,14 @@ class Machine:
                         amount_of_grouped += 1
                         value += part_set[j].value
                 mean_value = value / amount_of_grouped
-                amount_of_grouped += 1
                 if len(group) > 1:  # Если группа состоит не из одной партии, то переставляем также партии в группах
-                    self.in_queue = grouped_queue.append(self.transposition(part_set, group))
+                    grouped_queue.append(self.transposition(part_set, group))
+                    self.in_queue = grouped_queue.copy()
                 else:  # Иначе просто идем дальше
                     self.in_queue = grouped_queue.append(group)
                 group_values.append(mean_value)
+                if len(self.in_queue) <= amount_of_grouped:
+                    break
             group_has_values = dict.fromkeys(group_values)
             count = 0
             for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
