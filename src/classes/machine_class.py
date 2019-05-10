@@ -75,15 +75,13 @@ class Machine:
             group_has_values = dict.fromkeys(group_values)
             count = 0
             for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
-                group_has_values[k] = self.in_queue[count]
+                group_has_values[k] = self.in_queue[count].copy()
                 count += 1
         elif len(
                 self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
-            count = 0
             group_values.append(part_set[self.in_queue[0]].value)
-            for k in group_values:
-                group_has_values[k] = self.in_queue[count]
-                count += 1
+            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue.copy()
+            print('eferg')
 
         return group_values, group_has_values
 
@@ -100,8 +98,12 @@ class Machine:
 
     def optimize_groups(self, group_values, group_has_values):  # Переставляем группы исходя из их ценности
         group_values = sorted(group_values, reverse=True)
-        for i in range(len(self.in_queue)):
-            self.in_queue[i] = group_has_values[group_values[i]]
+
+        # for i in range(len(self.in_queue)):
+        #     self.in_queue[i] = group_has_values[group_values[i]]
+        self.in_queue.clear()
+        for i in group_values:
+            self.in_queue.append(group_has_values[i])
         self.out_queue.extend(self.in_queue)
 
     def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии

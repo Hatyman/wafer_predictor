@@ -1,4 +1,5 @@
 from src.functions import functions
+from itertools import groupby
 
 # Функция для сортировки пула по занчениею веса партии
 def sort_by_value(part):
@@ -77,6 +78,7 @@ def global_optimize(cursor=None):
                                 machine_set[ent['machines_machines_id']].in_queue.append(item)
                                 parts_set[item].current_entity = ent['machines_machines_id']
                                 tmp_heap.remove(item)
+                                break
                     print("Выводим очередь на установку {0}, если партия куда-нибудь добавилась:".format(machine_set[parts_set[item].current_entity].machine_id), machine_set[parts_set[item].current_entity].in_queue)
                     needs_to_stop = True
                     break
@@ -106,9 +108,8 @@ def global_optimize(cursor=None):
                     i += 1
                     break
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
-            print(res, parts_set[item].part_id, needs_to_stop, i)
+            # print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
-
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий
 machine_set = functions.create_machines()  # Вызываем функцию создания партий

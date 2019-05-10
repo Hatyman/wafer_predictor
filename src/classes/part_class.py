@@ -53,7 +53,7 @@ class Part:
     def observe_next_entity(self, cursor=None):
 
         # Получаем рецепт следующего шага
-        sql = "SELECT {0} FROM `sosable_v0.6`.list WHERE list_id = {1}".format(int(self.act_process) + 1, self.list_id)
+        sql = "SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id = {1}".format(int(self.act_process) + 1, self.list_id)
         cursor.execute(sql)
         res = cursor.fetchone()
 
@@ -65,7 +65,7 @@ class Part:
         cursor.execute(sql)
         res = cursor.fetchone()
 
-        self.further_time = res['time_of_process']
+        self.further_time = int(res['time_of_process'])
 
     # Функция обновления всех (которые могут изменяться) параметров партии
     @functions.conn_decorator_method
@@ -132,6 +132,9 @@ class Part:
         cursor.execute(sql, (self.queue, self.part_id))
 
     def calculate_value(self):
-        k_mts = 10 * self.least_tl / self.time_limit
+        if (self.time_limit):
+            k_mts = 10 * self.least_tl / self.time_limit
+        else:
+            k_mts = 0
         k_p = self.priority
         self.value = k_mts + k_p
