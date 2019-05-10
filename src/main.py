@@ -19,7 +19,8 @@ def global_optimize(cursor=None):
         # Удаляем партии с предыдущих установок
         for prev_mach in parts_set[item].prev_entity:
             try:
-                machine_set[prev_mach].in_queue.remove(parts_set[item].part_id)
+                if not parts_set[item].wait:
+                    machine_set[prev_mach].out_queue[0].remove(parts_set[item].part_id)
             except ValueError:
                 needs_to_print = True
         if needs_to_print:

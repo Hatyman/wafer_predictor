@@ -16,6 +16,8 @@ class Part:
         self.least_tl = 0.0
         self.value = 0.0
         self.further_time = 0
+        self.next_entity_list = []
+        self.next_entity = 0
         self.time_of_process = 0
         self.current_entity = 0
         self.prev_entity = []
@@ -23,7 +25,7 @@ class Part:
         self.get_other_params()
         self.get_current_time()
         self.get_prev_entity()
-        self.observe_next_entity()
+        self.get_next_entity()
         print('Создана партия с id {0}: {1} [list_id: {2}]'.format(self.part_id, self.name, self.list_id))
 
     # Функция получения МВХ и установки, где партии сейчас надо быть
@@ -49,23 +51,23 @@ class Part:
                                                                                          self.recipe_id))
 
     # Функция получения времени обработки на следующей установке
-    @functions.conn_decorator_method
-    def observe_next_entity(self, cursor=None):
-
-        # Получаем рецепт следующего шага
-        sql = "SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id = {1}".format(int(self.act_process) + 1, self.list_id)
-        cursor.execute(sql)
-        res = cursor.fetchone()
-
-        # Так мы динамически зайдем в словарь проще всего
-        for key, val in res.items():
-            sql = "SELECT time_of_process FROM `sosable_v0.6`.recipe WHERE recipe_id = {0}".format(val)
-
-        # Получаем время следующего шага
-        cursor.execute(sql)
-        res = cursor.fetchone()
-
-        self.further_time = int(res['time_of_process'])
+    # @functions.conn_decorator_method
+    # def observe_next_entity(self, cursor=None):
+    #
+    #     # Получаем рецепт следующего шага
+    #     sql = "SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id = {1}".format(int(self.act_process) + 1, self.list_id)
+    #     cursor.execute(sql)
+    #     res = cursor.fetchone()
+    #
+    #     # Так мы динамически зайдем в словарь проще всего
+    #     for key, val in res.items():
+    #         sql = "SELECT time_of_process FROM `sosable_v0.6`.recipe WHERE recipe_id = {0}".format(val)
+    #
+    #     # Получаем время следующего шага
+    #     cursor.execute(sql)
+    #     res = cursor.fetchone()
+    #
+    #     self.further_time = int(res['time_of_process'])
 
     # Функция обновления всех (которые могут изменяться) параметров партии
     @functions.conn_decorator_method
@@ -82,7 +84,7 @@ class Part:
         self.wait = res['wait']
         self.reserve = res['reserve']
         self.recipe_id = res['recipe_id']
-        self.observe_next_entity()
+        self.get_next_entity()
         self.get_prev_entity()
         self.get_other_params()
         self.get_current_time()
@@ -112,6 +114,25 @@ class Part:
             self.prev_entity.append(item['machines_machines_id'])
             self.time_limit = item['time_limit']
             self.least_tl = item['time_limit']
+
+    # Функция получения прошлой установки
+    @functions.conn_decorator_method
+    def get_next_entity(self, cursor=None):
+        # Ищем все машины, которые могли быть по рецепту предыдущего шага
+        sql = "SELECT machines_machines_id, time_limit FROM `sosable_v0.6`.machines_has_recipe INNER JOIN `sosable_v0.6`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id={1})".format(
+            int(self.act_process) + 1,
+            self.list_id
+        )
+        cursor.execute(sql)
+        res = cursor.fetchall()
+
+        # Чистим каждый раз наше множество во избежание проблем с дублированием
+        self.next_entity_list.clear()
+        queue = 999
+        # Обходим каждую из вернутых строк
+        for item in res:
+            self.next_entity_list.append(item['machines_machines_id'])
+
 
 
     # Функция получения времени выполнения текущего рецепта

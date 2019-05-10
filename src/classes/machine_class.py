@@ -12,7 +12,8 @@ class Machine:
         self.recipe_id = 0
         self.forbidden = False
         self.endQueue = 0
-        self.out_queue = []
+        self.len_queue = 0
+        self.out_queue = [[]]
         self.group_values = []
         self.recipes_count = None
         self.get_groups()
@@ -80,8 +81,7 @@ class Machine:
         elif len(
                 self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
             group_values.append(part_set[self.in_queue[0]].value)
-            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue
-            print('eferg')
+            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue.copy()
 
         return group_values, group_has_values
 
@@ -114,3 +114,9 @@ class Machine:
             self.optimize_groups(group_values, group_has_values)
             self.set_individual_queue(part_set)
             print(self.out_queue)
+
+    # Метод получения количества партий в очереди
+    def get_len_queue(self):
+        self.len_queue = 0
+        for item in self.out_queue:
+            self.len_queue += len(item)
