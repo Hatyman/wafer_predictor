@@ -80,31 +80,26 @@ class Machine:
         elif len(
                 self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
             group_values.append(part_set[self.in_queue[0]].value)
-            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue.copy()
+            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue
             print('eferg')
 
         return group_values, group_has_values
 
     def transposition(self, part_set, group):  # переставляем партии в группе, исходя из их ценности
         sorted_group = []
+        count = 0
         if len(group) > 1:
-            maxi = part_set[group[0]].value
             for i in group:
-                for j in range(len(group)):
-                    if part_set[i].value < part_set[group[j]].value:
-                        maxi = part_set[j].value
+                maxi = group[count]
+                for j in range(len(group) - count):
+                    if part_set[i].value < part_set[group[j + count]].value:
+                        maxi = group[j]
+                count += 1
                 sorted_group.append(maxi)
         return sorted_group
 
     def optimize_groups(self, group_values, group_has_values):  # Переставляем группы исходя из их ценности
-        group_values = sorted(group_values, reverse=True)
-
-        # for i in range(len(self.in_queue)):
-        #     self.in_queue[i] = group_has_values[group_values[i]]
-        self.in_queue.clear()
-        for i in group_values:
-            self.in_queue.append(group_has_values[i])
-        self.out_queue.extend(self.in_queue)
+        self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
     def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии
         count = 0
