@@ -122,3 +122,14 @@ class Machine:
         self.len_queue = 0
         for item in self.out_queue:
             self.len_queue += len(item)
+
+    # Метод подсчета ценности партий в очереди с учетом данных об очередях на следующую установку
+    def parse_out_queue(self, machine_set, parts_set):
+        max_next_queue = -1
+        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
+            for part in group:
+                if parts_set[part].next_queue > max_next_queue:
+                    max_next_queue = parts_set[part].next_queue
+        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
+            for part in group:
+                parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)

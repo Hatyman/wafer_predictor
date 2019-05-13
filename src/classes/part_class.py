@@ -128,12 +128,12 @@ class Part:
 
         # Чистим каждый раз наше множество во избежание проблем с дублированием
         self.next_entity_list.clear()
-        queue = 999
         # Обходим каждую из вернутых строк
         for item in res:
             self.next_entity_list.append(item['machines_machines_id'])
 
-
+    def set_next_entity(self, value):
+        self.next_entity = value
 
     # Функция получения времени выполнения текущего рецепта
     @functions.conn_decorator_method
@@ -149,13 +149,17 @@ class Part:
 
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def send_queue(self, cursor=None):
-        sql = "UPDATE `sosable_v0.6`.part SET queue = %s WHERE part_id = %s"
-        cursor.execute(sql, (self.queue, self.part_id))
+        sql = "UPDATE `sosable_v0.6`.part SET queue = {0} WHERE part_id = {1}".format(
+            self.queue,
+            self.part_id
+        )
+        cursor.execute(sql)
 
-    def calculate_value(self):
-        if (self.time_limit):
+    def calculate_value(self, max_next_queue=0, next_queue=0):
+        if self.time_limit:
             k_mts = 10 * self.least_tl / self.time_limit
         else:
             k_mts = 0
         k_p = self.priority
-        self.value = k_mts + k_p
+        k_o = 1 - (next_queue / max_next_queue)
+        self.value = k_mts + k_p + k_o

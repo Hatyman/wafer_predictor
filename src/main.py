@@ -51,6 +51,10 @@ def global_optimize(cursor=None):
             parts_set[item].estimate()
             heap.append(parts_set[item].part_id)
 
+    # Находим ту установку, куда мы можем дальше пойти, у которой наименьшая очередь
+    functions.setting_next_entity(machine_set, parts_set)
+    # Вычисляем ценность партии
+    functions.calculate_entity_queue_gain(machine_set, parts_set)
     heap.sort(key=sort_by_value, reverse=True)
     # Сначала ищем партии, у которых появится МВХ, затем распихиваем обычные
     tmp_heap = heap.copy()
@@ -111,6 +115,7 @@ def global_optimize(cursor=None):
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
             # print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
+
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий
 machine_set = functions.create_machines()  # Вызываем функцию создания партий
