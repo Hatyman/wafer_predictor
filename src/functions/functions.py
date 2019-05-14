@@ -98,18 +98,18 @@ def local_optimization(machines_set, part_set):  # Функция нужна д�
 # Функция для получения доступа к данным об установках и выбор установки для партии с наименьшей очередью
 def setting_next_entity(machine_set, parts_set):
     for part in parts_set:
-        part.get_next_entity()  # Получаем/обновляем список установок: куда дальше идти
+        parts_set[part].get_next_entity()  # Получаем/обновляем список установок: куда дальше идти
         min_queue = 999
         next_id = 0
-        for ent in part.next_entity:  # Перебираем все установки, куда мы можем пойти (учитывать флаг запрета???)
+        for ent in parts_set[part].next_entity_list:  # Перебираем все установки, куда мы можем пойти (учитывать флаг запрета???)
             if machine_set[ent].len_queue < min_queue and (not machine_set[ent].forbidden):
                 next_id = ent
                 min_queue = machine_set[ent].len_queue
         if next_id:
-            part.set_next_entity(next_id)  # Записываем номер найденной установки в свойство
+            parts_set[part].set_next_entity(next_id)  # Записываем номер найденной установки в свойство
 
 
 # Функция для вычисления ценности всех партий, которые находятся в установках
 def calculate_entity_queue_gain(machine_set, parts_set):
     for machine in machine_set:
-        machine.parse_out_queue(machine_set, parts_set)
+        machine_set[machine].parse_out_queue(machine_set, parts_set)

@@ -115,6 +115,8 @@ def global_optimize(cursor=None):
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
             # print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
+    functions.setting_next_entity(machine_set, parts_set)
+    functions.calculate_entity_queue_gain(machine_set, parts_set)
 
 
 parts_set = functions.create_parts()  # Вызываем функцию создания партий
