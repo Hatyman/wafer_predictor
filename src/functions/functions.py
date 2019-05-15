@@ -97,6 +97,8 @@ def local_optimization(machines_set, part_set):  # Функция нужна д�
 
 # Функция для получения доступа к данным об установках и выбор установки для партии с наименьшей очередью
 def setting_next_entity(machine_set, parts_set):
+    for key, val in machine_set.items():
+        val.get_len_queue()
     for part in parts_set:
         parts_set[part].get_next_entity()  # Получаем/обновляем список установок: куда дальше идти
         min_queue = 999

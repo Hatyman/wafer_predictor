@@ -164,5 +164,5 @@ class Part:
         if max_next_queue:
             k_o = 1 - (next_queue / max_next_queue)
         else:
-            k_o = 0
+            k_o = 1
         self.value = k_mts + k_p + k_o
