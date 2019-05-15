@@ -13,7 +13,7 @@ class Machine:
         self.forbidden = False
         self.endQueue = 0
         self.len_queue = 0
-        self.out_queue = [[]]
+        self.out_queue = []
         self.group_values = []
         self.recipes_count = None
         self.get_groups()
@@ -82,8 +82,11 @@ class Machine:
                 count += 1
         elif len(
                 self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
-            group_values.append(part_set[self.in_queue[0]].value)
-            group_has_values[part_set[self.in_queue[0]].value] = self.in_queue.copy()
+
+            insert = self.in_queue.copy()
+            self.in_queue[0] = insert
+            group_values.append(part_set[self.in_queue[0][0]].value)
+            group_has_values[part_set[self.in_queue[0][0]].value] = self.in_queue.copy()
 
         return group_values, group_has_values
 
@@ -101,6 +104,7 @@ class Machine:
         return sorted_group
 
     def optimize_groups(self, group_values, group_has_values):  # Переставляем группы исходя из их ценности
+
         self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
     def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии
@@ -119,22 +123,17 @@ class Machine:
 
     # Метод получения количества партий в очереди
     def get_len_queue(self):
-        self.len_queue = len(self.in_queue)
-        # for item in self.out_queue:
-        #     self.len_queue += len(item)
+        self.len_queue = 0
+        for item in self.out_queue:
+            self.len_queue += len(item)
 
     # Метод подсчета ценности партий в очереди с учетом данных об очередях на следующую установку
     def parse_out_queue(self, machine_set, parts_set):
         max_next_queue = -1
-        # for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
-        #     for part in group:
-        #         if parts_set[part].next_queue > max_next_queue:
-        #             max_next_queue = parts_set[part].next_queue
-        for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
-            if machine_set[parts_set[part].next_entity].len_queue > max_next_queue:
-                max_next_queue = machine_set[parts_set[part].next_entity].len_queue
-        # for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
-        #     for part in group:
-        #         parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)
-        for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
-            parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)
+        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
+            for part in group:
+                if parts_set[part].next_queue > max_next_queue:
+                    max_next_queue = parts_set[part].next_queue
+        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
+            for part in group:
+                parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)

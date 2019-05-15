@@ -157,7 +157,7 @@ class Part:
 
     def calculate_value(self, max_next_queue=0, next_queue=0):
         if self.time_limit:
-            k_mts = 10 * self.least_tl / self.time_limit
+            k_mts = self.least_tl / self.time_limit
         else:
             k_mts = 0
         k_p = self.priority
