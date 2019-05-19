@@ -3,7 +3,7 @@ from src.functions import functions
 
 class Part:
     # Конструктор партий, туда надо еще добавить параметров, вызываться он будет через функцию get_other_params
-    def __init__(self, part_id, name, list_id, act_process, queue, reserve, wait, recipe_id):
+    def __init__(self, part_id, name, list_id, act_process, queue, reserve, wait, recipe_id, priority):
         self.part_id = part_id
         self.name = name  # Это можно убрать, наверное, но лучше пусть будет
         self.list_id = list_id
@@ -21,7 +21,7 @@ class Part:
         self.time_of_process = 0
         self.current_entity = 0
         self.prev_entity = []
-        self.priority = 0
+        self.priority = priority
         self.get_other_params()
         self.get_current_time()
         self.get_prev_entity()
@@ -31,7 +31,7 @@ class Part:
     # Функция получения МВХ и установки, где партии сейчас надо быть
     @functions.conn_decorator_method
     def get_other_params(self, cursor=None):
-        sql = "SELECT m.machines_id FROM `sosable_v0.6`.recipe r INNER JOIN `sosable_v0.6`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `sosable_v0.6`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
+        sql = "SELECT m.machines_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `production`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
             self.recipe_id
         )
         cursor.execute(sql)
@@ -73,7 +73,7 @@ class Part:
     @functions.conn_decorator_method
     def update_attr(self, cursor=None):
 
-        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `sosable_v0.6`.part WHERE part_id={0}".format(
+        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(
             self.part_id
         )
         cursor.execute(sql)
@@ -99,7 +99,7 @@ class Part:
     @functions.conn_decorator_method
     def get_prev_entity(self, cursor=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
-        sql = "SELECT machines_machines_id, time_limit FROM `sosable_v0.6`.machines_has_recipe INNER JOIN `sosable_v0.6`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id={1})".format(
+        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
             int(self.act_process) - 1,
             self.list_id
         )
@@ -119,7 +119,7 @@ class Part:
     @functions.conn_decorator_method
     def get_next_entity(self, cursor=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
-        sql = "SELECT machines_machines_id, time_limit FROM `sosable_v0.6`.machines_has_recipe INNER JOIN `sosable_v0.6`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id={1})".format(
+        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
             int(self.act_process) + 1,
             self.list_id
         )
@@ -138,7 +138,7 @@ class Part:
     # Функция получения времени выполнения текущего рецепта
     @functions.conn_decorator_method
     def get_current_time(self, cursor=None):
-        sql = "SELECT time_of_process FROM `sosable_v0.6`.recipe WHERE recipe_id={0}".format(
+        sql = "SELECT time_of_process FROM `production`.recipe WHERE recipe_id={0}".format(
             self.recipe_id
         )
         cursor.execute(sql)
@@ -149,7 +149,7 @@ class Part:
 
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def send_queue(self, cursor=None):
-        sql = "UPDATE `sosable_v0.6`.part SET queue = {0} WHERE part_id = {1}".format(
+        sql = "UPDATE `production`.part SET queue = {0} WHERE part_id = {1}".format(
             self.queue,
             self.part_id
         )

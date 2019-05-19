@@ -1,5 +1,5 @@
 from src.functions import functions
-from itertools import groupby
+
 
 # Функция для сортировки пула по занчениею веса партии
 def sort_by_value(part):
@@ -64,7 +64,7 @@ def global_optimize(cursor=None):
         needs_to_stop = False
         i = 0
         while not needs_to_stop:
-            sql = "SELECT time_limit, machines_machines_id, recipe_id FROM `sosable_v0.6`.recipe r INNER JOIN `sosable_v0.6`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id WHERE r.recipe_id = (SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id={1})".format(
+            sql = "SELECT time_limit, machines_machines_id, recipe_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id WHERE r.recipe_id = (SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
                 int(parts_set[item].act_process) + i,
                 parts_set[item].list_id
             )

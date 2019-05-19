@@ -8,7 +8,7 @@ def connection(pwd='91xz271999'):
                               user='root',
                               password=pwd,
                               # password='91xz271999',
-                              db='sosable_v0.6',
+                              db='production',
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor)
     return connect
@@ -59,16 +59,17 @@ def create_parts(cursor=None):
     from src.classes import part_class
     inner_parts_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
-    sql = "SELECT * FROM `sosable_v0.6`.part"
+    sql = "SELECT * FROM `production`.part"
     cursor.execute(sql)  # Запрашиваем из БД данные
     res = cursor.fetchall()  # Превращаем в удобочитаемый вид
 
     for row in res:  # Обходим то, что получили
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
-        part_id, name, list_id, act_process, queue, reserve, wait, recipe_id = row
+        part_id, name, list_id, act_process, queue, reserve, wait, recipe_id, priority = row
         # Динамически создаем объекты партий
         inner_parts_set[row['part_id']] = part_class.Part(row[part_id], row[name], row[list_id], row[act_process],
-                                                          row[queue], row[reserve], row[wait], row[recipe_id])
+                                                          row[queue], row[reserve], row[wait], row[recipe_id],
+                                                          row[priority])
 
     return inner_parts_set
 
@@ -78,7 +79,7 @@ def create_machines(cursor=None):
     from src.classes import machine_class
     inner_machines_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
-    sql = "SELECT * FROM `sosable_v0.6`.machines"
+    sql = "SELECT * FROM `production`.machines"
     cursor.execute(sql)  # Запрашиваем из БД данные
     res = cursor.fetchall()  # Превращаем в удобочитаемый вид
 

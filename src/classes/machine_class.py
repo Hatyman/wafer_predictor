@@ -17,19 +17,13 @@ class Machine:
         self.group_values = []
         self.recipes_count = None
         self.get_groups()
-        # self.get_recipe()
-        # self.set_recipe(part_set=[])
-        # self.get_queue()
-        # self.group_recipe(part_set=[])
-        # self.transposition(part_set=[], group=[])
-        # self.optimize_groups(group_values=[], group_has_values={})
         print('Создана установка с id: {0}, recipe_id: {1} '
               'name: {2}'.format(self.machine_id, self.recipe_id, self.name))
 
     # Функция получения рецепта на установке, если мы будем цеплять его с бд (бд надо доработать)
     @functions.conn_decorator_method
     def get_recipe(self, cursor=None):
-        sql = "SELECT recipe_on FROM `sosable_v0.6`.machines WHERE machine_id = {0}".format(self.machine_id)
+        sql = "SELECT recipe_on FROM `production`.machines WHERE machine_id = {0}".format(self.machine_id)
         cursor.execute(sql)
         result = cursor.fetchone()
         self.recipe_id = result['recipe_on']
@@ -44,7 +38,7 @@ class Machine:
 
     @functions.conn_decorator_method
     def get_groups(self, cursor=None):
-        sql = "SELECT count(machines_has_recipe.recipe_recipe_id) FROM `sosable_v0.6`." \
+        sql = "SELECT count(machines_has_recipe.recipe_recipe_id) FROM `production`." \
               "machines_has_recipe WHERE machines_machines_id = {0};".format(self.machine_id)
         cursor.execute(sql)
         self.recipes_count = cursor.fetchone()

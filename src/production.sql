@@ -1,7 +1,8 @@
-
+CREATE DATABASE  IF NOT EXISTS `production` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
+USE `production`;
 -- MySQL dump 10.13  Distrib 5.7.25, for Linux (x86_64)
 --
--- Host: localhost    Database: sosable_v0.6
+-- Host: localhost    Database: production
 -- ------------------------------------------------------
 -- Server version	5.7.25-0ubuntu0.16.04.2
 
@@ -15,6 +16,30 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `communication`
+--
+
+DROP TABLE IF EXISTS `communication`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `communication` (
+  `period` int(11) DEFAULT NULL,
+  `flag_optimizatiion` tinyint(1) DEFAULT NULL,
+  `number` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `communication`
+--
+
+LOCK TABLES `communication` WRITE;
+/*!40000 ALTER TABLE `communication` DISABLE KEYS */;
+INSERT INTO `communication` VALUES (1,0,1);
+/*!40000 ALTER TABLE `communication` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `list`
@@ -620,7 +645,7 @@ CREATE TABLE `machines` (
   `work_stream_number` varchar(45) DEFAULT NULL,
   `broken` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`machines_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -629,7 +654,7 @@ CREATE TABLE `machines` (
 
 LOCK TABLES `machines` WRITE;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
-INSERT INTO `machines` VALUES (1,NULL,'POX01',NULL),(2,NULL,'PTU06',NULL),(3,NULL,'DGF01',NULL),(4,NULL,'DON01',NULL),(5,NULL,'MTU01',NULL),(6,NULL,'FAL01',NULL),(7,NULL,'EOX09',NULL),(8,NULL,'EMT02',NULL),(9,NULL,'PRS01',NULL),(10,NULL,'THM10',NULL),(11,NULL,'SOR1x',NULL),(12,NULL,'OIN0x',NULL),(13,NULL,'DDP0x',NULL),(14,NULL,'CDS07',NULL),(15,NULL,'OVL05',NULL),(16,NULL,'CUV06',NULL),(17,NULL,'UVH01',NULL),(18,NULL,'MSP01',NULL),(19,NULL,'MSP02',NULL),(20,NULL,'SCR0x',NULL),(21,NULL,'WPR01',NULL),(22,NULL,' SOR16',NULL),(23,NULL,'CDS0x',NULL),(24,NULL,'CUV0x',NULL),(25,NULL,'DBP01',NULL),(26,NULL,'DIP0x',NULL),(27,NULL,'EOX01',NULL),(28,NULL,'EOX02',NULL),(29,NULL,'EPN01',NULL),(30,NULL,'FHT01',NULL),(31,NULL,'FOX01',NULL),(32,NULL,'FOX04',NULL),(33,NULL,'IDM01',NULL),(34,NULL,'IHC02',NULL),(35,NULL,'IHV03',NULL),(36,NULL,'IMC04',NULL),(37,NULL,'LAS01',NULL),(38,NULL,'LPN01',NULL),(39,NULL,'LPN02',NULL),(40,NULL,'LPN04',NULL),(41,NULL,'LPP02',NULL),(42,NULL,'LPP05',NULL),(43,NULL,'LPT01',NULL),(44,NULL,'PRS02',NULL),(45,NULL,'RTO01',NULL),(46,NULL,'RTP01',NULL),(47,NULL,'RTP02',NULL),(48,NULL,'SOR12',NULL),(49,NULL,'SOR15',NULL),(50,NULL,'SOR16',NULL),(51,NULL,'THA01',NULL),(52,NULL,'THP01',NULL),(53,NULL,'WBS01',NULL),(54,NULL,'WCM01',NULL),(55,NULL,'WDB01',NULL),(56,NULL,'WDC03',NULL),(57,NULL,'WDC04',NULL),(58,NULL,'WDC05',NULL),(59,NULL,'WNT01',NULL),(60,NULL,'WRS05',NULL),(61,NULL,'XRF01',NULL);
+INSERT INTO `machines` VALUES (1,NULL,'POX01',NULL),(2,NULL,'PTU06',NULL),(3,NULL,'DGF01C',NULL),(4,NULL,'DGF01A',NULL),(5,NULL,'DGF01B',NULL),(6,NULL,'DON01C',NULL),(7,NULL,'DON01D',NULL),(8,NULL,'DON01A',NULL),(9,NULL,'DON01B',NULL),(10,NULL,'MTU01',NULL),(11,NULL,'FAL01',NULL),(12,NULL,'EOX092',NULL),(13,NULL,'EOX093',NULL),(14,NULL,'EOX094',NULL),(15,NULL,'EMT02',NULL),(16,NULL,'PRS01',NULL),(17,NULL,'THM10',NULL),(18,NULL,'SOR1x',NULL),(19,NULL,'OIN0x',NULL),(20,NULL,'DDP0x',NULL),(21,NULL,'CDS07',NULL),(22,NULL,'OVL05',NULL),(23,NULL,'CUV06',NULL),(24,NULL,'UVH01',NULL),(25,NULL,'MSP01C',NULL),(26,NULL,'MSP01D',NULL),(27,NULL,'MSP011',NULL),(28,NULL,'MSP012',NULL),(29,NULL,'MSP013',NULL),(30,NULL,'MSP014',NULL),(31,NULL,'MSP02',NULL),(32,NULL,'SCR0x',NULL),(33,NULL,'WPR01',NULL),(34,NULL,'SOR16',NULL),(35,NULL,'CDS0x',NULL),(36,NULL,'CUV0x',NULL),(37,NULL,'DBP01A',NULL),(38,NULL,'DBP01B',NULL),(39,NULL,'DIP0x',NULL),(40,NULL,'EOX01',NULL),(41,NULL,'EOX021',NULL),(42,NULL,'EOX022',NULL),(43,NULL,'EPN013',NULL),(44,NULL,'EPN014',NULL),(45,NULL,'EPN011',NULL),(46,NULL,'EPN012',NULL),(47,NULL,'FHT01',NULL),(48,NULL,'FOX01',NULL),(49,NULL,'FOX04',NULL),(50,NULL,'IDM01',NULL),(51,NULL,'IHC02',NULL),(52,NULL,'IHV03',NULL),(53,NULL,'IMC04',NULL),(54,NULL,'LAS01',NULL),(55,NULL,'LPN01',NULL),(56,NULL,'LPN02',NULL),(57,NULL,'LPN04',NULL),(58,NULL,'LPP02',NULL),(59,NULL,'LPP05',NULL),(60,NULL,'LPT01',NULL),(61,NULL,'PRS02',NULL),(62,NULL,'RTO01',NULL),(63,NULL,'RTP01',NULL),(64,NULL,'RTP02',NULL),(65,NULL,'SOR12',NULL),(66,NULL,'SOR15',NULL),(67,NULL,'THA01',NULL),(68,NULL,'THP01',NULL),(69,NULL,'WBS01',NULL),(70,NULL,'WCM01',NULL),(71,NULL,'WDB01',NULL),(72,NULL,'WDC03',NULL),(73,NULL,'WDC04',NULL),(74,NULL,'WDC05',NULL),(75,NULL,'WNT01',NULL),(76,NULL,'WRS05',NULL),(77,NULL,'XRF01',NULL);
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -657,7 +682,7 @@ CREATE TABLE `machines_has_recipe` (
 
 LOCK TABLES `machines_has_recipe` WRITE;
 /*!40000 ALTER TABLE `machines_has_recipe` DISABLE KEYS */;
-INSERT INTO `machines_has_recipe` VALUES (20,1),(11,2),(22,2),(48,2),(49,2),(50,2),(13,3),(16,4),(24,4),(15,5),(12,6),(8,7),(20,8),(20,9),(21,9),(9,10),(44,10),(20,11),(26,12),(3,13),(12,14),(10,15),(20,16),(13,17),(4,18),(10,19),(1,20),(10,21),(52,21),(4,22),(10,23),(13,24),(16,25),(24,25),(15,26),(7,27),(27,27),(28,27),(12,28),(20,29),(18,30),(19,30),(20,31),(13,32),(5,33),(51,34),(13,35),(2,36),(18,37),(19,37),(13,38),(18,39),(19,39),(51,40),(16,41),(24,41),(15,42),(8,43),(17,44),(26,45),(1,46),(10,47),(52,47),(15,48),(7,49),(27,49),(28,49),(13,50),(2,51),(18,52),(19,52),(51,53),(15,54),(8,55),(13,56),(1,57),(10,58),(52,58),(15,59),(7,60),(27,60),(28,60),(13,61),(2,62),(18,63),(19,63),(15,64),(8,65),(6,66),(3,67),(10,68),(4,69),(10,70),(16,71),(24,71),(17,72),(7,73),(27,73),(28,73),(20,74),(9,75),(44,75),(9,76),(44,76),(13,77),(11,78),(22,78),(48,78),(49,78),(50,78),(15,79),(37,80),(56,81),(57,81),(58,81),(31,82),(32,82),(10,83),(38,84),(39,84),(40,84),(10,85),(16,86),(24,86),(14,87),(23,87),(26,88),(29,89),(60,90),(9,91),(44,91),(60,92),(12,93),(56,94),(57,94),(58,94),(26,95),(56,96),(57,96),(58,96),(30,97),(10,98),(10,99),(3,100),(10,101),(13,102),(56,103),(57,103),(58,103),(43,104),(10,105),(30,106),(10,107),(16,108),(24,108),(15,109),(7,110),(27,110),(28,110),(10,111),(56,112),(57,112),(58,112),(10,113),(53,114),(1,115),(10,116),(52,116),(10,117),(52,117),(59,118),(10,119),(13,120),(45,121),(10,122),(16,123),(24,123),(15,124),(34,125),(35,125),(36,125),(33,126),(12,127),(16,128),(24,128),(15,129),(17,130),(34,131),(36,131),(33,132),(9,133),(44,133),(60,134),(30,135),(13,136),(31,137),(32,137),(10,138),(10,139),(15,140),(9,141),(44,141),(55,142),(10,143),(60,144),(12,145),(31,146),(32,146),(10,147),(10,148),(41,149),(42,149),(10,150),(61,151),(16,152),(24,152),(15,153),(29,154),(60,155),(10,156),(26,157),(15,158),(34,159),(35,159),(36,159),(33,160),(33,161),(33,162),(33,163),(36,164),(33,165),(26,166),(15,167),(34,168),(35,168),(36,168),(9,169),(44,169),(15,170),(33,171),(33,172),(15,173),(33,174),(26,175),(56,176),(57,176),(58,176),(10,177),(38,177),(39,177),(40,177),(31,178),(32,178),(10,179),(15,180),(7,181),(27,181),(28,181),(10,182),(55,183),(10,184),(60,185),(26,186),(53,187),(31,188),(32,188),(10,189),(10,190),(41,191),(42,191),(10,192),(15,193),(17,194),(9,195),(44,195),(16,196),(24,196),(15,197),(29,198),(33,199),(60,200),(10,201),(15,202),(26,203),(16,204),(24,204),(15,205),(29,206),(10,207),(26,208),(15,209),(7,210),(27,210),(28,210),(10,211),(56,212),(57,212),(58,212),(46,213),(47,213),(10,214),(16,215),(24,215),(15,216),(33,217),(33,218),(56,219),(57,219),(58,219),(46,220),(47,220),(15,221),(33,222),(33,223),(26,224),(38,225),(39,225),(40,225),(10,226),(38,227),(39,227),(40,227),(10,228),(7,229),(27,229),(28,229),(10,230),(15,231),(33,232),(15,233),(26,234),(33,235),(56,236),(57,236),(58,236),(53,237),(46,238),(47,238),(26,239),(38,240),(39,240),(40,240),(10,241),(9,242),(44,242),(15,243),(29,244),(10,245),(33,246),(56,247),(57,247),(58,247),(18,248),(19,248),(46,249),(47,249),(54,250),(11,251),(22,251),(48,251),(49,251),(50,251),(26,252),(4,253),(10,254),(25,255),(10,256),(46,257),(47,257),(13,258),(1,259),(10,260),(52,260),(15,261),(15,262),(26,263),(7,264),(27,264),(28,264),(54,265),(26,266),(9,267),(44,267),(9,268),(44,268),(26,269),(18,270),(19,270),(13,271),(46,272),(47,272),(5,273),(2,274),(13,275),(25,276),(10,277),(46,278),(47,278),(15,279),(7,280),(27,280),(28,280),(21,281),(13,282),(2,283),(18,284),(19,284);
+INSERT INTO `machines_has_recipe` VALUES (32,1),(18,2),(34,2),(65,2),(66,2),(20,3),(23,4),(36,4),(22,5),(19,6),(15,7),(32,8),(32,9),(33,9),(16,10),(32,11),(39,12),(4,13),(5,13),(19,14),(17,15),(32,16),(20,17),(6,18),(7,18),(17,19),(1,20),(17,21),(68,21),(8,22),(17,23),(20,24),(23,25),(36,25),(22,26),(12,27),(13,27),(19,28),(32,29),(25,30),(26,30),(27,30),(28,30),(31,30),(32,31),(20,32),(10,33),(67,34),(20,35),(2,36),(31,37),(20,38),(31,39),(67,40),(23,41),(36,41),(22,42),(15,43),(24,44),(39,45),(1,46),(17,47),(68,47),(22,48),(12,49),(13,49),(20,50),(2,51),(31,52),(67,53),(22,54),(15,55),(20,56),(1,57),(17,58),(68,58),(22,59),(12,60),(13,60),(20,61),(2,62),(31,63),(22,64),(15,65),(11,66),(3,67),(17,68),(9,69),(17,70),(23,71),(36,71),(24,72),(14,73),(32,74),(16,75),(16,76),(20,77),(18,78),(41,79),(42,79),(54,80),(74,81),(48,82),(17,83),(56,84),(17,85),(23,86),(36,86),(21,87),(35,87),(39,88),(43,89),(76,90),(61,91),(76,92),(19,93),(73,94),(39,95),(73,96),(47,97),(17,98),(17,99),(3,100),(17,101),(20,102),(73,103),(60,104),(17,105),(47,106),(17,107),(23,108),(36,108),(22,109),(41,110),(42,110),(17,111),(73,112),(17,113),(69,114),(1,115),(17,116),(68,116),(17,117),(68,117),(75,118),(17,119),(20,120),(62,121),(17,122),(23,123),(36,123),(22,124),(51,125),(52,125),(53,125),(50,126),(19,127),(23,128),(36,128),(22,129),(24,130),(51,131),(53,131),(50,132),(61,133),(76,134),(47,135),(20,136),(48,137),(17,138),(17,139),(22,140),(61,141),(71,142),(17,143),(76,144),(19,145),(48,146),(17,147),(17,148),(58,149),(17,150),(77,151),(23,152),(36,152),(22,153),(43,154),(44,154),(76,155),(17,156),(39,157),(22,158),(51,159),(52,159),(53,159),(50,160),(50,161),(50,162),(50,163),(53,164),(50,165),(39,166),(22,167),(51,168),(52,168),(53,168),(61,169),(22,170),(50,171),(50,172),(22,173),(50,174),(39,175),(72,176),(17,177),(55,177),(49,178),(17,179),(22,180),(41,181),(42,181),(17,182),(71,183),(17,184),(76,185),(39,186),(69,187),(48,188),(17,189),(17,190),(59,191),(17,192),(22,193),(24,194),(61,195),(23,196),(36,196),(22,197),(43,198),(50,199),(76,200),(17,201),(22,202),(39,203),(23,204),(36,204),(22,205),(45,206),(46,206),(17,207),(39,208),(22,209),(41,210),(42,210),(17,211),(72,212),(63,213),(64,213),(17,214),(23,215),(36,215),(22,216),(50,217),(50,218),(72,219),(63,220),(64,220),(22,221),(50,222),(50,223),(39,224),(57,225),(17,226),(56,227),(17,228),(40,229),(17,230),(22,231),(50,232),(22,233),(39,234),(50,235),(72,236),(69,237),(63,238),(64,238),(39,239),(56,240),(17,241),(61,242),(22,243),(43,244),(44,244),(17,245),(50,246),(72,247),(29,248),(30,248),(31,248),(63,249),(64,249),(70,250),(18,251),(34,251),(39,252),(9,253),(17,254),(37,255),(38,255),(17,256),(63,257),(64,257),(20,258),(1,259),(17,260),(68,260),(22,261),(22,262),(39,263),(12,264),(13,264),(70,265),(39,266),(16,267),(16,268),(39,269),(25,270),(26,270),(27,270),(28,270),(31,270),(20,271),(63,272),(64,272),(10,273),(2,274),(20,275),(38,276),(17,277),(63,278),(64,278),(22,279),(41,280),(42,280),(33,281),(20,282),(2,283),(31,284);
 /*!40000 ALTER TABLE `machines_has_recipe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -672,17 +697,18 @@ CREATE TABLE `part` (
   `part_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
   `list_list_id` int(11) NOT NULL,
-  `active_process` varchar(45) DEFAULT NULL,
+  `active_process` varchar(45) NOT NULL,
   `queue` int(11) DEFAULT NULL,
-  `reservation` tinyint(1) DEFAULT NULL,
-  `wait` tinyint(1) DEFAULT NULL,
+  `reservation` tinyint(1) NOT NULL,
+  `wait` tinyint(1) NOT NULL,
   `part_recipe_id` int(11) NOT NULL,
+  `priority` int(2) NOT NULL,
   PRIMARY KEY (`part_id`),
   KEY `fk_Part_list1_idx` (`list_list_id`),
   KEY `fk_part_recipe1_idx` (`part_recipe_id`),
   CONSTRAINT `fk_Part_list1` FOREIGN KEY (`list_list_id`) REFERENCES `list` (`list_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_part_recipe1` FOREIGN KEY (`part_recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -691,7 +717,7 @@ CREATE TABLE `part` (
 
 LOCK TABLES `part` WRITE;
 /*!40000 ALTER TABLE `part` DISABLE KEYS */;
-INSERT INTO `part` VALUES (1,'SAP_1',1,'28',1,1,0,14),(2,'PART_0_LIST_1',1,'2',NULL,NULL,NULL,2),(3,'PART_1_LIST_1',1,'70',NULL,NULL,NULL,6),(4,'PART_2_LIST_1',1,'84',NULL,NULL,NULL,6),(5,'PART_3_LIST_1',1,'15',NULL,NULL,NULL,13),(6,'PART_4_LIST_1',1,'40',NULL,NULL,NULL,14),(7,'PART_5_LIST_1',1,'73',NULL,NULL,NULL,2),(8,'PART_6_LIST_1',1,'98',NULL,NULL,NULL,2),(9,'PART_7_LIST_1',1,'79',NULL,NULL,NULL,18),(10,'PART_8_LIST_1',1,'16',NULL,NULL,NULL,14),(11,'PART_9_LIST_1',1,'17',NULL,NULL,NULL,15),(12,'PART_0_LIST_2',2,'85',NULL,NULL,NULL,135),(13,'PART_1_LIST_2',2,'6',NULL,NULL,NULL,85),(14,'PART_2_LIST_2',2,'37',NULL,NULL,NULL,107),(15,'PART_3_LIST_2',2,'73',NULL,NULL,NULL,127),(16,'PART_4_LIST_2',2,'19',NULL,NULL,NULL,94),(17,'PART_5_LIST_2',2,'93',NULL,NULL,NULL,140),(18,'PART_6_LIST_2',2,'34',NULL,NULL,NULL,104),(19,'PART_7_LIST_2',2,'71',NULL,NULL,NULL,91),(20,'PART_8_LIST_2',2,'61',NULL,NULL,NULL,121),(21,'PART_9_LIST_2',2,'25',NULL,NULL,NULL,98),(22,'PART_0_LIST_1',1,'2',NULL,0,0,2),(23,'PART_1_LIST_1',1,'70',NULL,0,0,6),(24,'PART_2_LIST_1',1,'84',NULL,0,0,6),(25,'PART_3_LIST_1',1,'15',NULL,0,0,13),(26,'PART_4_LIST_1',1,'40',NULL,0,0,14),(27,'PART_5_LIST_1',1,'73',NULL,0,0,2),(28,'PART_6_LIST_1',1,'98',NULL,0,0,2),(29,'PART_7_LIST_1',1,'79',NULL,0,0,18),(30,'PART_8_LIST_1',1,'16',NULL,0,0,14),(31,'PART_9_LIST_1',1,'17',NULL,0,0,15),(32,'PART_0_LIST_2',2,'85',NULL,0,0,135),(33,'PART_1_LIST_2',2,'6',NULL,0,0,85),(34,'PART_2_LIST_2',2,'37',NULL,0,0,107),(35,'PART_3_LIST_2',2,'73',NULL,0,0,127),(36,'PART_4_LIST_2',2,'19',NULL,0,0,94),(37,'PART_5_LIST_2',2,'93',NULL,0,0,140),(38,'PART_6_LIST_2',2,'34',NULL,0,0,104),(39,'PART_7_LIST_2',2,'71',NULL,0,0,91),(40,'PART_8_LIST_2',2,'61',NULL,0,0,121),(41,'PART_9_LIST_2',2,'25',NULL,0,0,98);
+INSERT INTO `part` VALUES (1,'PART_0_LIST_1',1,'57',NULL,0,1,2,1),(2,'PART_1_LIST_1',1,'73',NULL,0,1,2,1),(3,'PART_2_LIST_1',1,'41',NULL,0,1,31,1),(4,'PART_3_LIST_1',1,'22',NULL,0,1,14,0),(5,'PART_4_LIST_1',1,'29',NULL,0,1,23,1),(6,'PART_5_LIST_1',1,'39',NULL,0,1,30,1),(7,'PART_6_LIST_1',1,'64',NULL,0,1,42,1),(8,'PART_7_LIST_1',1,'82',NULL,0,1,46,0),(9,'PART_8_LIST_1',1,'81',NULL,0,1,19,0),(10,'PART_9_LIST_1',1,'25',NULL,0,1,21,1),(11,'PART_0_LIST_2',2,'35',NULL,0,1,105,0),(12,'PART_1_LIST_2',2,'76',NULL,0,1,87,1),(13,'PART_2_LIST_2',2,'18',NULL,0,1,93,0),(14,'PART_3_LIST_2',2,'50',NULL,0,1,113,0),(15,'PART_4_LIST_2',2,'88',NULL,0,1,94,0),(16,'PART_5_LIST_2',2,'22',NULL,0,1,95,1),(17,'PART_6_LIST_2',2,'44',NULL,0,1,111,1),(18,'PART_7_LIST_2',2,'78',NULL,0,1,130,1),(19,'PART_8_LIST_2',2,'5',NULL,0,1,84,1),(20,'PART_9_LIST_2',2,'52',NULL,0,1,115,1);
 /*!40000 ALTER TABLE `part` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -717,22 +743,47 @@ CREATE TABLE `recipe` (
 
 LOCK TABLES `recipe` WRITE;
 /*!40000 ALTER TABLE `recipe` DISABLE KEYS */;
-INSERT INTO `recipe` VALUES (1,'50',17,0),(2,'CHECKSLOT',5,12),(3,'6293',10,0),(4,'38',30,0),(5,'800-MET1-705',5,0),(6,'OPTICAL-INSP',10,0),(7,'F80M1A2',80,6),(8,'13',20,0),(9,'33',35,0),(10,'DRYING1',20,5),(11,'41',20,3),(12,'6360',40,0),(13,'DGFFSG02',120,0),(14,'EASY1-MACRO',10,0),(15,'CV-FSGGF',5,0),(16,'42',20,8),(17,'6395',10,0),(18,'FTEOS01',120,0),(19,'CV-OXIMD',5,0),(20,'F80PI101',90,24),(21,'CM-FSGIMD1',10,0),(22,'SIRICH04',90,0),(23,'CV-SIRICH',5,0),(24,'6435',10,0),(25,'24',30,24),(26,'815-VIA1-800',5,0),(27,'F80VIA11',75,72),(28,'INS4CH',10,8),(29,'53',13,0),(30,'IMPCVD03',80,72),(31,'52',13,12),(32,'6580',10,0),(33,'WSRVIA11',60,12),(34,'Wvia',5,0),(35,'6592',10,0),(36,'PV104F80',90,0),(37,'TITN10',80,0),(38,'6699',10,0),(39,'TIALTX03',80,0),(40,'Metal2',5,0),(41,'40',30,0),(42,'820-MET2-815',5,0),(43,'F80M2A1',80,5),(44,'ERASE2',60,0),(45,'6910',40,0),(46,'F80PI201',90,24),(47,'CM-FSGIMD2',10,0),(48,'825-VIA2-820',5,0),(49,'F80VIA21',5,72),(50,'7070',10,0),(51,'PV204F80',90,0),(52,'TIALTX10',80,0),(53,'Metal ',5,0),(54,'830-MET3-825',5,0),(55,'F80M3A1',80,3),(56,'7245',10,0),(57,'F80PI301',90,24),(58,'CM-FSGIMD3',10,0),(59,'835-VIA3-830',5,0),(60,'F80VIA31',5,72),(61,'7430',10,0),(62,'PV304F80',90,0),(63,'TIALTN20',80,0),(64,'840-MET4-835',5,0),(65,'F80M4A1',80,3),(66,'ALLOY02',180,0),(67,'DGFFP03',140,15),(68,'CV-OXPAS',5,0),(69,'NIUV03',180,0),(70,'CV-NIPAS',5,0),(71,'130',30,0),(72,'CURE4',16,0),(73,'T70PAD3',120,0),(74,'2',20,0),(75,'RRPPAD1',34,0),(76,'BLAPR2',30,0),(77,'8958',10,0),(78,'PTSORTAA',5,0),(79,'F80DTXXF',5,0),(80,'MKL9310B',30,0),(81,'SPMHFRC040',80,0),(82,'OXIDE13',260,0),(83,'DF-NPOX13',5,0),(84,'NITR01',350,0),(85,'NITR01E',5,0),(86,'48',30,0),(87,'',8,8),(88,'1203',40,0),(89,'F80STI4',160,0),(90,'RRWT7CC1',43,0),(91,'RRPSTD1',30,0),(92,'RRWT7AA1',41,0),(93,'INS3CH',10,0),(94,'N1HFRC08A200',60,24),(95,'1330',40,0),(96,'N1RCA01B',50,0),(97,'OXHT07',510,24),(98,'OXHT07AE',5,24),(99,'DF-OXWALL',5,24),(100,'DGFBOX04',110,24),(101,'CV-BOX',5,0),(102,'1366',10,0),(103,'N1RCA01A',50,24),(104,'TEOS05',330,0),(105,'TEOS05E',5,0),(106,'OXHT08',430,0),(107,'DF-AGAPF',5,0),(108,'49',30,0),(109,'106-REVE-105',5,0),(110,'F80INVA2',100,0),(111,'ET-INVACTI',5,0),(112,'N1HFS101A330',50,0),(113,'DF-CLEANOX',5,0),(114,'RBSOX01',35,0),(115,'F80PST03',90,0),(116,'CM-STINIT',10,0),(117,'CM-STIOX',10,0),(118,'R1F8001',105,0),(119,'DF-WROXRES',5,0),(120,'1530',10,0),(121,'RTOSAC03',90,8),(122,'DF-OXSAC',5,0),(123,'46',30,0),(124,'275-EPM-105',5,0),(125,'B',15,0),(126,'B015K01',10,0),(127,'INS2CH',10,0),(128,'47',30,0),(129,'265-CAPA-105',5,0),(130,'CURE3',20,0),(131,'A',15,0),(132,'A020K01',10,0),(133,'RRPIMP4',23,0),(134,'RRWSTD1',37,0),(135,'OXHT10',460,24),(136,'2282',10,24),(137,'OXIDE32T',380,14),(138,'OXIDE32AE',5,0),(139,'DF-HVOX',5,0),(140,'405-TUNN-105',5,0),(141,'RRPDES04',25,24),(142,'BOE230A',31,24),(143,'ET-OXBOE230',5,24),(144,'RRWHVOX1',45,24),(145,'INS1CH',10,24),(146,'OXIDE22T',310,14),(147,'OXIDE22AE',5,8),(148,'DF-OXTUN',5,8),(149,'POLY06',390,8),(150,'POLY06E',5,0),(151,'PolySi30',40,0),(152,'134',30,0),(153,'555-FLGA-105',5,0),(154,'F80POFG2',65,0),(155,'RRWT7BB1',44,0),(156,'ET-POLYFG',5,0),(157,'2540',40,0),(158,'015-NWEL-105',5,0),(159,'P',18,0),(160,'P120K02',10,0),(161,'A140K06',10,0),(162,'B200K02',10,0),(163,'B025K14',10,0),(164,'I',20,0),(165,'I150K03',10,0),(166,'2696',40,0),(167,'025-HVNW-105',5,0),(168,'F',20,0),(169,'RRPIMP2',45,0),(170,'065-HVPW-105',5,0),(171,'BF80HVP1',10,0),(172,'P040K04',10,0),(173,'067-HVNT-105',5,0),(174,'P035K01',10,0),(175,'3257',40,0),(176,'N2RCA01B',50,24),(177,'ONO05',5,24),(178,'OXPO01',280,24),(179,'OXPO01AE',5,14),(180,'525-LVMX-105',5,0),(181,'F80ON2',80,0),(182,'ET-OXRESMAT',5,0),(183,'BOE420A',63,24),(184,'ET-OXBOE420',5,24),(185,'RRWMTX2',41,24),(186,'3365',40,24),(187,'BF80OP2A',45,24),(188,'OX533TM',240,14),(189,'OXIDE16AE',5,24),(190,'DF-OXGATE',5,24),(191,'POLY03',310,24),(192,'POLY03AE',5,0),(193,'395-PDOP-105',5,0),(194,'DUVCURE3',16,0),(195,'RRPIMP1',30,0),(196,'36',30,0),(197,'515-SLGA-105',5,0),(198,'F80STAC3',220,0),(199,'P085K01',10,0),(200,'RRWSPM01',45,0),(201,'ET-OXRESSTCK',5,0),(202,'515-ETCH-105',5,0),(203,'3735',40,0),(204,'34',30,0),(205,'505-CIGA-105',5,0),(206,'F80GATE2',140,0),(207,'ET-OXRESGATE',5,0),(208,'3865',40,0),(209,'550-HVMX-105',5,0),(210,'F80ONO1',65,0),(211,'ET-OXRESONO',5,0),(212,'N2HFRC29C055',65,8),(213,'RTOREOX08',90,8),(214,'DF-PREOX',5,0),(215,'51',30,0),(216,'615-LDDN-105',5,0),(217,'A012K01',10,0),(218,'B025K09',10,0),(219,'N2RCA03C',50,12),(220,'ANLDD02',90,12),(221,'645-LDDP-105',5,0),(222,'F007K01',10,0),(223,'P070K02',10,0),(224,'4477',40,0),(225,'MSHTO05',390,0),(226,'MSHTO05AE',5,0),(227,'NITR08',310,0),(228,'NITR08E',5,0),(229,'F80SPAC2',100,0),(230,'ET-SPAC',5,0),(231,'605-SDN-105',5,0),(232,'A070K01',10,0),(233,'655-SDP-105',5,0),(234,'4715',40,0),(235,'B007K03',10,0),(236,'N2HFRC13C060',65,0),(237,'BF80OP3C',65,0),(238,'ANSD07',90,12),(239,'4987',40,0),(240,'NITR09',330,0),(241,'NITR09E',5,0),(242,'PCPHOTO1',20,0),(243,'425-SIPR-105',5,0),(244,'F80SIPR1',60,0),(245,'ET-SALINIT',5,0),(246,'A040K01',10,0),(247,'N2HFRL01B067',70,36),(248,'COTN11',60,2),(249,'ANCOSF02',90,14),(250,'R3CO02',55,14),(251,'PODCHANG1',5,24),(252,'5370',40,24),(253,'DNIBT01',90,24),(254,'CV-NITBL',5,0),(255,'USG-BPSG',340,24),(256,'DF-BPSGLIL',5,4),(257,'ANBPSG03',90,4),(258,'5457',10,0),(259,'F80PPM01',90,0),(260,'CM-OXPMD',10,0),(261,'710-LILH-515',5,0),(262,'710-LILH-105',5,0),(263,'5503',40,0),(264,'F80LIL5',145,0),(265,'RRWF8LIL',36,0),(266,'5567',40,0),(267,'RRPDES01',20,0),(268,'RRPIMP5',23,0),(269,'5737',40,0),(270,'IMPCVD02',85,6),(271,'5830',10,0),(272,'ANBARR04',90,12),(273,'WSRLIL04',60,12),(274,'PL003F80',90,0),(275,'5855',10,0),(276,'SABPSG03',240,4),(277,'DF-BPSGPMD',5,4),(278,'ANBPSG04',90,4),(279,'705-CONT-710',5,0),(280,'F80CONT1',120,0),(281,'35',20,8),(282,'6175',10,12),(283,'PC003F80',90,0),(284,'TIALTX13',80,0);
+INSERT INTO `recipe` VALUES (1,'50',17,0),(2,'CHECKSLOT',5,12),(3,'6293',10,0),(4,'38',30,0),(5,'800-MET1-705',5,0),(6,'OPTICAL-INSP',10,0),(7,'F80M1A2',80,6),(8,'13',20,0),(9,'33',35,0),(10,'DRYING1',20,5),(11,'41',20,3),(12,'6360',40,0),(13,'DGFFSG02',120,0),(14,'EASY1-MACRO',10,0),(15,'CV-FSGGF',5,0),(16,'42',20,8),(17,'6395',10,0),(18,'FTEOS01',120,0),(19,'CV-OXIMD',5,0),(20,'F80PI101',90,24),(21,'CM-FSGIMD1',10,0),(22,'SIRICH04',90,0),(23,'CV-SIRICH',5,0),(24,'6435',10,0),(25,'24',30,24),(26,'815-VIA1-800',5,0),(27,'F80VIA11',75,72),(28,'INS4CH',10,8),(29,'53',13,0),(30,'IMPCVD03',80,72),(31,'52',13,12),(32,'6580',10,0),(33,'WSRVIA11',60,12),(34,'Wvia',5,0),(35,'6592',10,0),(36,'PV104F80',90,0),(37,'TITN10',80,0),(38,'6699',10,0),(39,'TIALTX03',80,0),(40,'Metal2',5,0),(41,'40',30,0),(42,'820-MET2-815',5,0),(43,'F80M2A1',80,5),(44,'ERASE2',60,0),(45,'6910',40,0),(46,'F80PI201',90,24),(47,'CM-FSGIMD2',10,0),(48,'825-VIA2-820',5,0),(49,'F80VIA21',75,72),(50,'7070',10,0),(51,'PV204F80',90,0),(52,'TIALTX10',80,0),(53,'Metal ',5,0),(54,'830-MET3-825',5,0),(55,'F80M3A1',80,3),(56,'7245',10,0),(57,'F80PI301',90,24),(58,'CM-FSGIMD3',10,0),(59,'835-VIA3-830',5,0),(60,'F80VIA31',75,72),(61,'7430',10,0),(62,'PV304F80',90,0),(63,'TIALTN20',80,0),(64,'840-MET4-835',5,0),(65,'F80M4A1',80,3),(66,'ALLOY02',180,0),(67,'DGFFP03',140,15),(68,'CV-OXPAS',5,0),(69,'NIUV03',180,0),(70,'CV-NIPAS',5,0),(71,'130',30,0),(72,'CURE4',16,0),(73,'T70PAD3',120,0),(74,'2',20,0),(75,'RRPPAD1',34,0),(76,'BLAPR2',30,0),(77,'8958',10,0),(78,'PTSORTAA',5,0),(79,'F80DTXXF',120,0),(80,'MKL9310B',30,0),(81,'SPMHFRC040',80,0),(82,'OXIDE13',260,0),(83,'DF-NPOX13',5,0),(84,'NITR01',350,0),(85,'NITR01E',5,0),(86,'48',30,0),(87,'',8,8),(88,'1203',40,0),(89,'F80STI4',160,0),(90,'RRWT7CC1',43,0),(91,'RRPSTD1',30,0),(92,'RRWT7AA1',41,0),(93,'INS3CH',10,0),(94,'N1HFRC08A200',60,24),(95,'1330',40,0),(96,'N1RCA01B',50,0),(97,'OXHT07',510,24),(98,'OXHT07AE',5,24),(99,'DF-OXWALL',5,24),(100,'DGFBOX04',110,24),(101,'CV-BOX',5,0),(102,'1366',10,0),(103,'N1RCA01A',50,24),(104,'TEOS05',330,0),(105,'TEOS05E',5,0),(106,'OXHT08',430,0),(107,'DF-AGAPF',5,0),(108,'49',30,0),(109,'106-REVE-105',5,0),(110,'F80INVA2',100,0),(111,'ET-INVACTI',5,0),(112,'N1HFS101A330',50,0),(113,'DF-CLEANOX',5,0),(114,'RBSOX01',35,0),(115,'F80PST03',90,0),(116,'CM-STINIT',10,0),(117,'CM-STIOX',10,0),(118,'R1F8001',105,0),(119,'DF-WROXRES',5,0),(120,'1530',10,0),(121,'RTOSAC03',90,8),(122,'DF-OXSAC',5,0),(123,'46',30,0),(124,'275-EPM-105',5,0),(125,'B',15,0),(126,'B015K01',10,0),(127,'INS2CH',10,0),(128,'47',30,0),(129,'265-CAPA-105',5,0),(130,'CURE3',20,0),(131,'A',15,0),(132,'A020K01',10,0),(133,'RRPIMP4',23,0),(134,'RRWSTD1',37,0),(135,'OXHT10',460,24),(136,'2282',10,24),(137,'OXIDE32T',380,14),(138,'OXIDE32AE',5,0),(139,'DF-HVOX',5,0),(140,'405-TUNN-105',5,0),(141,'RRPDES04',25,24),(142,'BOE230A',31,24),(143,'ET-OXBOE230',5,24),(144,'RRWHVOX1',45,24),(145,'INS1CH',10,24),(146,'OXIDE22T',310,14),(147,'OXIDE22AE',5,8),(148,'DF-OXTUN',5,8),(149,'POLY06',390,8),(150,'POLY06E',5,0),(151,'PolySi30',40,0),(152,'134',30,0),(153,'555-FLGA-105',5,0),(154,'F80POFG2',65,0),(155,'RRWT7BB1',44,0),(156,'ET-POLYFG',5,0),(157,'2540',40,0),(158,'015-NWEL-105',5,0),(159,'P',18,0),(160,'P120K02',10,0),(161,'A140K06',10,0),(162,'B200K02',10,0),(163,'B025K14',10,0),(164,'I',20,0),(165,'I150K03',10,0),(166,'2696',40,0),(167,'025-HVNW-105',5,0),(168,'F',20,0),(169,'RRPIMP2',45,0),(170,'065-HVPW-105',5,0),(171,'BF80HVP1',10,0),(172,'P040K04',10,0),(173,'067-HVNT-105',5,0),(174,'P035K01',10,0),(175,'3257',40,0),(176,'N2RCA01B',50,24),(177,'ONO05',5,24),(178,'OXPO01',280,24),(179,'OXPO01AE',5,14),(180,'525-LVMX-105',5,0),(181,'F80ON2',80,0),(182,'ET-OXRESMAT',5,0),(183,'BOE420A',63,24),(184,'ET-OXBOE420',5,24),(185,'RRWMTX2',41,24),(186,'3365',40,24),(187,'BF80OP2A',45,24),(188,'OX533TM',240,14),(189,'OXIDE16AE',5,24),(190,'DF-OXGATE',5,24),(191,'POLY03',310,24),(192,'POLY03AE',5,0),(193,'395-PDOP-105',5,0),(194,'DUVCURE3',16,0),(195,'RRPIMP1',30,0),(196,'36',30,0),(197,'515-SLGA-105',5,0),(198,'F80STAC3',220,0),(199,'P085K01',10,0),(200,'RRWSPM01',45,0),(201,'ET-OXRESSTCK',5,0),(202,'515-ETCH-105',5,0),(203,'3735',40,0),(204,'34',30,0),(205,'505-CIGA-105',5,0),(206,'F80GATE2',140,0),(207,'ET-OXRESGATE',5,0),(208,'3865',40,0),(209,'550-HVMX-105',5,0),(210,'F80ONO1',65,0),(211,'ET-OXRESONO',5,0),(212,'N2HFRC29C055',65,8),(213,'RTOREOX08',90,8),(214,'DF-PREOX',5,0),(215,'51',30,0),(216,'615-LDDN-105',5,0),(217,'A012K01',10,0),(218,'B025K09',10,0),(219,'N2RCA03C',50,12),(220,'ANLDD02',90,12),(221,'645-LDDP-105',5,0),(222,'F007K01',10,0),(223,'P070K02',10,0),(224,'4477',40,0),(225,'MSHTO05',390,0),(226,'MSHTO05AE',5,0),(227,'NITR08',310,0),(228,'NITR08E',5,0),(229,'F80SPAC2',100,0),(230,'ET-SPAC',5,0),(231,'605-SDN-105',5,0),(232,'A070K01',10,0),(233,'655-SDP-105',5,0),(234,'4715',40,0),(235,'B007K03',10,0),(236,'N2HFRC13C060',65,0),(237,'BF80OP3C',65,0),(238,'ANSD07',90,12),(239,'4987',40,0),(240,'NITR09',330,0),(241,'NITR09E',5,0),(242,'PCPHOTO1',20,0),(243,'425-SIPR-105',5,0),(244,'F80SIPR1',60,0),(245,'ET-SALINIT',5,0),(246,'A040K01',10,0),(247,'N2HFRL01B067',70,36),(248,'COTN11',60,2),(249,'ANCOSF02',90,14),(250,'R3CO02',55,14),(251,'PODCHANG1',5,24),(252,'5370',40,24),(253,'DNIBT01',90,24),(254,'CV-NITBL',5,0),(255,'USG-BPSG',340,24),(256,'DF-BPSGLIL',5,4),(257,'ANBPSG03',90,4),(258,'5457',10,0),(259,'F80PPM01',90,0),(260,'CM-OXPMD',10,0),(261,'710-LILH-515',5,0),(262,'710-LILH-105',5,0),(263,'5503',40,0),(264,'F80LIL5',145,0),(265,'RRWF8LIL',36,0),(266,'5567',40,0),(267,'RRPDES01',20,0),(268,'RRPIMP5',23,0),(269,'5737',40,0),(270,'IMPCVD02',85,6),(271,'5830',10,0),(272,'ANBARR04',90,12),(273,'WSRLIL04',60,12),(274,'PL003F80',90,0),(275,'5855',10,0),(276,'SABPSG03',240,4),(277,'DF-BPSGPMD',5,4),(278,'ANBPSG04',90,4),(279,'705-CONT-710',5,0),(280,'F80CONT1',120,0),(281,'35',20,8),(282,'6175',10,12),(283,'PC003F80',90,0),(284,'TIALTX13',80,0);
 /*!40000 ALTER TABLE `recipe` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'sosable_v0.6'
+-- Table structure for table `timestamps`
+--
+
+DROP TABLE IF EXISTS `timestamps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `timestamps` (
+  `create_time` time(6) DEFAULT NULL,
+  `update_time` time(6) DEFAULT NULL,
+  `id_part` int(11) DEFAULT NULL,
+  `id_machines` int(11) DEFAULT NULL,
+  `active_process` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `timestamps`
+--
+
+LOCK TABLES `timestamps` WRITE;
+/*!40000 ALTER TABLE `timestamps` DISABLE KEYS */;
+/*!40000 ALTER TABLE `timestamps` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'production'
 --
 /*!50003 DROP PROCEDURE IF EXISTS `do_your_recipe` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `do_your_recipe`()
 BEGIN
@@ -740,7 +791,7 @@ BEGIN
 	DECLARE i INTEGER DEFAULT 0;
 	SET i = (SELECT COUNT(part_id) FROM part);
 	WHILE y <= i DO
-       CALL `sosable_v0.6`.`get_id`((SELECT active_process FROM part WHERE part_id=y), y);
+       CALL `production`.`get_id`((SELECT active_process FROM part WHERE part_id=y), y);
        SET y = y + 1;
        -- select y;
 	END WHILE;
@@ -754,11 +805,11 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_id`(
 act INTEGER,
@@ -785,12 +836,32 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `increment`(id_part INTEGER)
 BEGIN
 	UPDATE part SET part.`active_process`= (part.`active_process`+1) WHERE part_id=id_part;
-    CALL `sosable_v0.6`.`do_your_recipe`();
+    CALL `production`.`do_your_recipe`();
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `invert_flag` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `invert_flag`()
+BEGIN
+SET @p = (SELECT IF(communication.`flag_optimization` = FALSE, 1, 0) FROM communication WHERE communication.`number` = 1);
+	UPDATE communication SET communication.`flag_optimization`= @p WHERE communication.`number` = 1;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -805,7 +876,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `in_machine`(machine VARCHAR(15))
 BEGIN
@@ -832,7 +903,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `queue`(machine VARCHAR(15))
 BEGIN
@@ -851,6 +922,33 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `queue_for_optimizer` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `queue_for_optimizer`(machine INT)
+BEGIN
+SELECT p.`part_id`, r.`recipe_id`, r.`time_of_process` FROM `machines` as m
+ RIGHT JOIN `machines_has_recipe` as mhr 
+ ON m.machines_id = mhr.machines_machines_id
+ RIGHT JOIN `recipe` as r
+ ON mhr.recipe_recipe_id = recipe_id
+ RIGHT JOIN `part` as p
+ ON recipe_id = p.part_recipe_id
+ WHERE m.machines_id = machine AND p.`reservation` = 0 AND p.`wait` = 1
+ ORDER BY r.`recipe_id`, p.`queue`;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `reservationup` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -859,13 +957,13 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `reservationup`(id_part INTEGER)
 BEGIN
 SET @p = (SELECT IF(part.`reservation` = FALSE, 1, 0) FROM part WHERE part_id=id_part);
 	UPDATE part SET part.`reservation`= @p WHERE part_id=id_part;
-    CALL `sosable_v0.6`.`do_your_recipe`();
+    CALL `production`.`do_your_recipe`();
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -876,11 +974,11 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `setting`(
 id INTEGER,
@@ -901,7 +999,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `waitdown`(id_part INTEGER)
 BEGIN
@@ -921,7 +1019,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `waitup`(id_part INTEGER)
 BEGIN
@@ -943,4 +1041,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-19 20:00:19
+-- Dump completed on 2019-05-19 18:56:13
