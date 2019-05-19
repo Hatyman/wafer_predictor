@@ -26,7 +26,8 @@ DROP TABLE IF EXISTS `communication`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `communication` (
   `period` int(11) DEFAULT NULL,
-  `flag_optimizatiion` tinyint(1) DEFAULT NULL,
+  `flag_optimization` tinyint(1) DEFAULT NULL,
+  `flag_wait` tinyint(1) DEFAULT NULL
   `number` int(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -37,7 +38,7 @@ CREATE TABLE `communication` (
 
 LOCK TABLES `communication` WRITE;
 /*!40000 ALTER TABLE `communication` DISABLE KEYS */;
-INSERT INTO `communication` VALUES (1,0,1);
+INSERT INTO `communication` VALUES (1,1,0,1);
 /*!40000 ALTER TABLE `communication` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -861,6 +862,26 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `invert_flag`()
 BEGIN
 SET @p = (SELECT IF(communication.`flag_optimization` = FALSE, 1, 0) FROM communication WHERE communication.`number` = 1);
+	UPDATE communication SET communication.`flag_optimization`= @p WHERE communication.`number` = 1;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `in_machine` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `invert_flag_wait`()
+BEGIN
+SET @p = (SELECT IF(communication.`flag_wait` = FALSE, 1, 0) FROM communication WHERE communication.`number` = 1);
 	UPDATE communication SET communication.`flag_optimization`= @p WHERE communication.`number` = 1;
 END ;;
 DELIMITER ;

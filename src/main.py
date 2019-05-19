@@ -1,3 +1,5 @@
+import time
+
 from src.functions import functions
 
 
@@ -113,7 +115,7 @@ def global_optimize(cursor=None):
                     i += 1
                     break
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
-            # print(res, parts_set[item].part_id, needs_to_stop, i)
+            print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
     functions.setting_next_entity(machine_set, parts_set)
     functions.calculate_entity_queue_gain(machine_set, parts_set)
@@ -124,27 +126,14 @@ machine_set = functions.create_machines()  # Вызываем функцию с�
 heap = []  # Пул
 
 # Тест сортировки
-parts_set[14].value = 0.7
-parts_set[5].value = 0.7
-parts_set[8].value = 0.8
-parts_set[3].value = 0.7
-parts_set[10].value = 0.2
+
 # test = [14, 3, 8, 5, 10]
 # print(test)
 # test.sort(key=sort_by_value, reverse=True)
 # print(test)
-a = 0
-a = machine_set[3].get_groups()
-print(a)
+t = time.clock()
+while True:
 
-global_optimize()
-for i in parts_set:
-    print(parts_set[i].value)
-for i in machine_set:
-    print(machine_set[i].in_queue)
-functions.local_optimization(machine_set, parts_set)
-print('-----')
-# print(machine_set[3].queue)
-# print(machine_set[3].forbidden)
-# print(parts_set[14].current_entity)
-# print(parts_set[14].time_limit)
+    if functions.allow_for_planing():
+        global_optimize()
+        functions.local_optimization(machine_set, parts_set)
