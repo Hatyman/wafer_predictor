@@ -109,10 +109,13 @@ class Machine:
                 count += 1
 
     def local_optimizer(self, part_set):
-        if len(self.in_queue) > 0:
+        if len(self.in_queue) > 0 or \
+                ((self.machine_id != 11 and self.machine_id != 47 and self.machine_id != 48 and self.machine_id != 49)
+                 or len(self.in_queue) > 12):
             group_values, group_has_values = self.group_recipe(part_set)
             self.optimize_groups(group_values, group_has_values)
             self.set_individual_queue(part_set)
+            self.in_queue.clear()
             print(self.out_queue)
 
     # Метод получения количества партий в очереди

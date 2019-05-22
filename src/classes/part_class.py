@@ -1,5 +1,3 @@
-import time
-
 from src.functions import functions
 
 
@@ -94,13 +92,6 @@ class Part:
         self.get_other_params()
         self.get_current_time()
         self.calculate_value()
-        if not self.getting_time() and not self.log_flag:
-            self.start_process = time.clock()
-            self.log_flag = True
-        if self.getting_time() and self.log_flag:
-            self.end_process = time.clock()
-            self.log_flag = False
-            self.write_logs()
 
 
     # Функция рассчета веса партии (пока пустая)
@@ -179,20 +170,3 @@ class Part:
             k_o = 1
         self.value = k_mts + k_p + k_o
 
-    @functions.conn_decorator_method
-    def write_logs(self, cursor=None):
-        sql = "UPDATE `production`.timestamps SET create_time = {0}, update_time = {1}," \
-              "id_part = {2}, id_machines = {3}, active process = {4}".format(self.start_process,
-                                                                              self.end_process,
-                                                                              self.part_id,
-                                                                              self.current_entity,
-                                                                              self.act_process
-                                                                              )
-        cursor.execute(sql)
-
-    @functions.conn_decorator_method
-    def getting_time(self, cursor=None):
-        sql = "SELECT flag_wait FROM communication WHERE number = 1"
-        cursor.execute(sql)
-        res = cursor.fetchall()
-        return res['flag_wait']

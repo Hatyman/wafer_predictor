@@ -66,7 +66,9 @@ def global_optimize(cursor=None):
         needs_to_stop = False
         i = 0
         while not needs_to_stop:
-            sql = "SELECT time_limit, machines_machines_id, recipe_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id WHERE r.recipe_id = (SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
+            sql = "SELECT time_limit, machines_machines_id, recipe_id FROM `production`.recipe r " \
+                  "INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id " \
+                  "WHERE r.recipe_id = (SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
                 int(parts_set[item].act_process) + i,
                 parts_set[item].list_id
             )
@@ -96,6 +98,10 @@ def global_optimize(cursor=None):
                         time_queue = 0
                         for items_queue in machine_set[ent['machines_machines_id']].in_queue:
                             time_queue += parts_set[items_queue].time_of_process
+                        for items_queue in machine_set[ent['machines_machines_id']].out_queue:
+                            for _part in items_queue:
+                                time_queue += parts_set[_part].time_of_process
+
                         if (time_queue < min_time_queue) and (not machine_set[ent['machines_machines_id']].forbidden):
                             ent_id = ent['machines_machines_id']
                             min_time_queue = time_queue
@@ -103,7 +109,11 @@ def global_optimize(cursor=None):
                     if ent_id > 0:
                         if not i:
                             parts_set[item].current_entity = ent_id
-                        machine_set[ent_id].forbidden = True
+                        if ent_id != 11 and ent_id != 47 and ent_id != 48 and ent_id != 49:
+                            machine_set[ent_id].forbidden = True
+                        if (ent_id == 11 or ent_id == 47 or ent_id == 48 or ent_id == 49) \
+                                and (len(machine_set[ent_id].in_queue) > 12):
+                            machine_set[ent_id].forbidden = True
                         print("Машина {0} c id {1} заблокирована для партии {2} c id {3}".format(
                             machine_set[ent_id].name,
                             ent_id,
@@ -133,7 +143,6 @@ heap = []  # Пул
 # print(test)
 t = time.clock()
 while True:
-
-    if functions.allow_for_planing():
-        global_optimize()
-        functions.local_optimization(machine_set, parts_set)
+    a = functions.allow_for_planing()
+    global_optimize()
+    functions.local_optimization(machine_set, parts_set)
