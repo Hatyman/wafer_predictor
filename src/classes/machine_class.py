@@ -86,15 +86,13 @@ class Machine:
 
     def transposition(self, part_set, group):  # переставляем партии в группе, исходя из их ценности
         sorted_group = []
-        count = 0
+        sorted_value = []
         if len(group) > 1:
             for i in group:
-                maxi = group[count]
-                for j in range(len(group) - count):
-                    if part_set[i].value < part_set[group[j + count]].value:
-                        maxi = group[j]
-                count += 1
-                sorted_group.append(maxi)
+                sorted_value.append(part_set[i].value)
+
+        sorted_group = [x for _, x in sorted(zip(sorted_value, group), reverse=True)]
+
         return sorted_group
 
     def optimize_groups(self, group_values, group_has_values):  # Переставляем группы исходя из их ценности
