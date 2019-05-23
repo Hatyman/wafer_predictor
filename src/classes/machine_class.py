@@ -100,7 +100,7 @@ class Machine:
         self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
     def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии
-        count = 0
+        count = 1
         for i in range(len(self.out_queue)):
             for j in range(len(self.out_queue[i])):
                 part_set[self.out_queue[i][j]].queue = count

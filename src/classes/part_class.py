@@ -152,11 +152,13 @@ class Part:
 
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def send_queue(self, cursor=None):
-        sql = "UPDATE `production`.part SET queue = {0} WHERE part_id = {1}".format(
-            self.queue,
-            self.part_id
-        )
-        cursor.execute(sql)
+        if self.queue:
+            sql = "UPDATE `production`.part SET queue = {0} WHERE part_id = {1}".format(
+                self.queue,
+                self.part_id
+            )
+            cursor.execute(sql)
+
 
     def calculate_value(self, max_next_queue=0, next_queue=0):
         if self.time_limit:

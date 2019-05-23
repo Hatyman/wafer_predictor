@@ -20,14 +20,16 @@ def global_optimize(cursor=None):
         parts_set[item].update_attr()
         needs_to_print = False
         # Удаляем партии с предыдущих установок
-        for prev_mach in parts_set[item].prev_entity:
-            try:
-                if not parts_set[item].wait:
-                    machine_set[prev_mach].out_queue[0].remove(parts_set[item].part_id)
-            except ValueError:
-                needs_to_print = True
+        try:
+            if not parts_set[item].wait:
+                machine_set[parts_set[item].current_entity].out_queue[0].remove(parts_set[item].part_id)
+                if not len(machine_set[parts_set[item].current_entity].out_queue[0]):
+                    machine_set[parts_set[item].current_entity].out_queue.remove([])
+
+        except ValueError:
+            needs_to_print = True
         if needs_to_print:
-            print("Партия id {0} {1} засиделась без места в очереди на установку {2} с id {3}".format(
+            print("Партия id {0} {1} была удалена из очереди на установку {2} с id {3}".format(
                 parts_set[item].part_id,
                 parts_set[item].name,
                 machine_set[parts_set[item].current_entity].name,
@@ -145,6 +147,10 @@ heap = []  # Пул
 while True:
     a = functions.allow_for_planing()
     if a:
+        t1 = time.clock()
         global_optimize()
         functions.local_optimization(machine_set, parts_set)
+        functions.send_queue_db(parts_set)
         functions.disable_for_planing()
+        t2 = time.clock() - t1
+        print(t2)

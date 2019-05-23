@@ -28,6 +28,7 @@ def conn_decorator(func):
                 dict = func(cursor)
 
         finally:  # Закрытие подключения выполнится в любом случае вконце
+            conn.commit()
             conn.close()
             return dict
 
@@ -48,6 +49,7 @@ def conn_decorator_method(func):
                 func(self, cursor)
 
         finally:  # Закрытие подключения выполнится в любом случае вконце
+            conn.commit()
             conn.close()
 
     return wrapper
@@ -129,5 +131,9 @@ def allow_for_planing(cursor=None):
 
 @conn_decorator
 def disable_for_planing(cursor=None):
-    sql = "UPDATE `production`.communication SET flag_optimizatiion = 0 WHERE number = 1"
-    cursor.execute(sql)
+    cursor.callproc("flagdown")
+
+
+def send_queue_db(part_set):
+    for id_part in part_set:
+        part_set[id_part].send_queue()
