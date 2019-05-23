@@ -107,28 +107,29 @@ class Machine:
                 count += 1
 
     def local_optimizer(self, part_set):
-        if len(self.in_queue) > 0 or \
-                ((self.machine_id != 11 and self.machine_id != 47 and self.machine_id != 48 and self.machine_id != 49)
+        if len(self.in_queue) > 0 and \
+                ((self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42)
                  or len(self.in_queue) > 12):
             group_values, group_has_values = self.group_recipe(part_set)
             self.optimize_groups(group_values, group_has_values)
             self.set_individual_queue(part_set)
             self.in_queue.clear()
             print(self.out_queue)
+            print(self.name)
 
     # Метод получения количества партий в очереди
     def get_len_queue(self):
         self.len_queue = 0
         for item in self.out_queue:
             self.len_queue += len(item)
+        self.len_queue += len(self.in_queue)
 
     # Метод подсчета ценности партий в очереди с учетом данных об очередях на следующую установку
     def parse_out_queue(self, machine_set, parts_set):
         max_next_queue = -1
-        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
-            for part in group:
-                if parts_set[part].next_queue > max_next_queue:
-                    max_next_queue = parts_set[part].next_queue
-        for group in self.out_queue:  # Здесь не уверен что парсить - вход или выход
-            for part in group:
-                parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)
+        for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
+            if machine_set[parts_set[part].next_entity].len_queue > max_next_queue:
+                max_next_queue = machine_set[parts_set[part].next_entity].len_queue
+        for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
+            parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)
+

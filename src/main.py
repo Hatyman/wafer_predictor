@@ -109,9 +109,9 @@ def global_optimize(cursor=None):
                     if ent_id > 0:
                         if not i:
                             parts_set[item].current_entity = ent_id
-                        if ent_id != 11 and ent_id != 47 and ent_id != 48 and ent_id != 49:
+                        if ent_id != 11 and ent_id != 40 and ent_id != 41 and ent_id != 42:
                             machine_set[ent_id].forbidden = True
-                        if (ent_id == 11 or ent_id == 47 or ent_id == 48 or ent_id == 49) \
+                        if (ent_id == 11 or ent_id == 40 or ent_id == 41 or ent_id == 42) \
                                 and (len(machine_set[ent_id].in_queue) > 12):
                             machine_set[ent_id].forbidden = True
                         print("Машина {0} c id {1} заблокирована для партии {2} c id {3}".format(
@@ -125,7 +125,7 @@ def global_optimize(cursor=None):
                     i += 1
                     break
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
-            print(res, parts_set[item].part_id, needs_to_stop, i)
+            # print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
     functions.setting_next_entity(machine_set, parts_set)
     functions.calculate_entity_queue_gain(machine_set, parts_set)
@@ -141,8 +141,10 @@ heap = []  # Пул
 # print(test)
 # test.sort(key=sort_by_value, reverse=True)
 # print(test)
-t = time.clock()
+# t = time.clock()
 while True:
     a = functions.allow_for_planing()
-    global_optimize()
-    functions.local_optimization(machine_set, parts_set)
+    if a:
+        global_optimize()
+        functions.local_optimization(machine_set, parts_set)
+        functions.disable_for_planing()

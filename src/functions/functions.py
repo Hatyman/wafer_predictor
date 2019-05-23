@@ -125,3 +125,9 @@ def allow_for_planing(cursor=None):
     res = cursor.fetchall()
     flag = res[0]['flag_optimizatiion']
     return flag
+
+
+@conn_decorator
+def disable_for_planing(cursor=None):
+    sql = "UPDATE `production`.communication SET flag_optimizatiion = 0 WHERE number = 1"
+    cursor.execute(sql)
