@@ -40,7 +40,8 @@ def global_optimize(cursor=None):
         # Отделяем только те мвхшные партии, которых еще нет в очередях
         if (parts_set[item].part_id not in machine_set[parts_set[item].current_entity].in_queue) and parts_set[item].time_limit:
             # Добавляем в очередь, если установка доступна для планирования
-            machine_set[parts_set[item].current_entity].in_queue.append(parts_set[item].part_id)
+            if parts_set[item].queue is not None:
+                machine_set[parts_set[item].current_entity].in_queue.append(parts_set[item].part_id)
             # Ставим флаг запрета планирования
             # machine_set[parts_set[item].current_entity].forbidden = True
             print('Добавлена в очередь ({5}) установки id:{0} "{1}" партия с id {2} с рецептом {3} и МВХ {4}'.format(
@@ -51,8 +52,7 @@ def global_optimize(cursor=None):
                 parts_set[item].time_limit,
                 machine_set[parts_set[item].current_entity].in_queue.index(parts_set[item].part_id)
             ))
-        elif (parts_set[item].part_id not in machine_set[parts_set[item].current_entity].in_queue) and (not parts_set[item].time_limit) and (parts_set[item].part_id not in heap):
-            parts_set[item].estimate()
+        elif (parts_set[item].queue is not None) and (not parts_set[item].time_limit) and (parts_set[item].part_id not in heap):
             heap.append(parts_set[item].part_id)
 
     # Находим ту установку, куда мы можем дальше пойти, у которой наименьшая очередь

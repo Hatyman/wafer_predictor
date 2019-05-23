@@ -160,6 +160,13 @@ class Part:
             cursor.execute(sql)
 
 
+    @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
+    def reset_queue(self, cursor=None):
+        sql = "UPDATE `production`.part SET queue = NULL WHERE part_id = {0}".format(
+            self.part_id
+        )
+        cursor.execute(sql)
+
     def calculate_value(self, max_next_queue=0, next_queue=0):
         if self.time_limit:
             k_mts = self.least_tl / self.time_limit
