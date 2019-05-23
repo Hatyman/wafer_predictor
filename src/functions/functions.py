@@ -120,10 +120,10 @@ def calculate_entity_queue_gain(machine_set, parts_set):
 
 @conn_decorator
 def allow_for_planing(cursor=None):
-    sql = "SELECT flag_optimizatiion FROM `production`.communication"
+    sql = "SELECT flag_optimization FROM `production`.communication"
     cursor.execute(sql)
     res = cursor.fetchall()
-    flag = res[0]['flag_optimizatiion']
+    flag = res[0]['flag_optimization']
     return flag
 
 

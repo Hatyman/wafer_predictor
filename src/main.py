@@ -17,6 +17,7 @@ def global_optimize(cursor=None):
     global heap
     # Смотрим все партии, ищем мвхшные
     for item in parts_set:
+        parts_set[item].update_attr()
         needs_to_print = False
         # Удаляем партии с предыдущих установок
         for prev_mach in parts_set[item].prev_entity:
@@ -34,7 +35,6 @@ def global_optimize(cursor=None):
             ))
 
         # Обновим все данные о партии
-        parts_set[item].update_attr()
         # Отделяем только те мвхшные партии, которых еще нет в очередях
         if (parts_set[item].part_id not in machine_set[parts_set[item].current_entity].in_queue) and parts_set[item].time_limit:
             # Добавляем в очередь, если установка доступна для планирования
