@@ -1,4 +1,5 @@
 from src.functions import functions
+import sys
 import numpy as np
 
 
@@ -26,7 +27,11 @@ class Part:
         self.start_process = 0
         self.end_process = 0
         self.log_flag = 0
-        self.get_other_params()
+        try:
+            self.get_other_params()
+        except Exception as e:
+            print(str(e))
+            print(sys.exc_info())
         self.get_current_time()
         self.get_prev_entity()
         self.get_next_entity()
@@ -135,10 +140,12 @@ class Part:
         self.prev_entity.clear()
 
         # Обходим каждую из вернутых строк
-        for item in res:
-            self.prev_entity.append(item['machines_machines_id'])
-            self.time_limit = item['time_limit']
-            self.least_tl = item['time_limit']
+        for cash in res:
+            self.prev_entity.append(cash['machines_machines_id'])
+            if self.time_limit != cash['time_limit']:
+                self.least_tl = cash['time_limit']
+            self.time_limit = cash['time_limit']
+
 
     # Функция получения прошлой установки
     @functions.conn_decorator_method
@@ -156,8 +163,8 @@ class Part:
         # Чистим каждый раз наше множество во избежание проблем с дублированием
         self.next_entity_list.clear()
         # Обходим каждую из вернутых строк
-        for item in res:
-            self.next_entity_list.append(item['machines_machines_id'])
+        for mach in res:
+            self.next_entity_list.append(mach['machines_machines_id'])
 
     def set_next_entity(self, value):
         self.next_entity = value
@@ -175,16 +182,17 @@ class Part:
         return self.time_of_process
 
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
-    def send_queue(self, cursor=None):
+    def send_queue(self, cursor=None, conn=None):
         if self.queue:
             sql = "UPDATE `production`.part SET queue = {0} WHERE part_id = {1}".format(
                 self.queue,
                 self.part_id
             )
             cursor.execute(sql)
+            conn.commit()
 
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
-    def reset_queue(self, cursor=None):
+    def reset_queue(self, cursor=None, conn=None):
         sql = "UPDATE `production`.part SET queue = NULL WHERE part_id = {0}".format(
             self.part_id
         )
@@ -195,7 +203,7 @@ class Part:
             k_mts = self.least_tl / self.time_limit
         else:
             k_mts = 0
-        k_p = self.priority
+        k_p = self.priority / 4
         if max_next_queue:
             k_o = 1 - (next_queue / max_next_queue)
         else:

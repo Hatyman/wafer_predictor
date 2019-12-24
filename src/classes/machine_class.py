@@ -11,6 +11,7 @@ class Machine:
         self.broken = broken
         self.recipe_id = 0
         self.forbidden = False
+        self.who_forbidden = ""
         self.endQueue = 0
         self.len_queue = 0
         self.out_queue = []
@@ -22,7 +23,7 @@ class Machine:
 
     # Функция получения рецепта на установке, если мы будем цеплять его с бд (бд надо доработать)
     @functions.conn_decorator_method
-    def get_recipe(self, cursor=None):
+    def get_recipe(self, cursor=None, conn=None):
         sql = "SELECT recipe_on FROM `production`.machines WHERE machine_id = {0}".format(self.machine_id)
         cursor.execute(sql)
         result = cursor.fetchone()
@@ -37,7 +38,7 @@ class Machine:
         self.forbidden = not self.forbidden
 
     @functions.conn_decorator_method
-    def get_groups(self, cursor=None):
+    def get_groups(self, cursor=None, conn=None):
         sql = "SELECT count(machines_has_recipe.recipe_recipe_id) FROM `production`." \
               "machines_has_recipe WHERE machines_machines_id = {0};".format(self.machine_id)
         cursor.execute(sql)
@@ -143,12 +144,11 @@ class Machine:
                 count += 1
 
     def local_optimizer(self, part_set):
-        if len(self.in_queue) > 0 and \
-                ((self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42)
-                 or len(self.in_queue) > 12):
+        if len(self.in_queue) > 0:
             group_values, group_has_values = self.group_recipe(part_set)
             self.optimize_groups(group_values, group_has_values)
-            self.set_individual_queue(part_set)
+            if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
+                self.set_individual_queue(part_set)
             self.in_queue.clear()
             print(self.out_queue)
             print(self.name)
@@ -156,8 +156,8 @@ class Machine:
     # Метод получения количества партий в очереди
     def get_len_queue(self):
         self.len_queue = 0
-        for item in self.out_queue:
-            self.len_queue += len(item)
+        for _item in self.out_queue:
+            self.len_queue += len(_item)
         self.len_queue += len(self.in_queue)
 
     # Метод подсчета ценности партий в очереди с учетом данных об очередях на следующую установку

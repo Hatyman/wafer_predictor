@@ -1,5 +1,5 @@
 import pymysql.cursors
-
+import sys
 
 # Функция подключения к бд
 def connection(pwd='91xz271999'):
@@ -25,10 +25,11 @@ def conn_decorator(func):
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
                 dict = {}
-                dict = func(cursor)
-
+                dict = func(cursor, conn)
+        except Exception as e:
+            print(str(e))
+            print(sys.exc_info())
         finally:  # Закрытие подключения выполнится в любом случае вконце
-            conn.commit()
             conn.close()
             return dict
 
@@ -46,10 +47,11 @@ def conn_decorator_method(func):
         try:
             with conn.cursor() as cursor:  # Инициализируем менеджера с защитой от сбоев
 
-                func(self, cursor)
-
+                func(self, cursor, conn)
+        # except Exception as e:
+        #     print(str(e))
+        #     print(sys.exc_info())
         finally:  # Закрытие подключения выполнится в любом случае вконце
-            conn.commit()
             conn.close()
 
     return wrapper
@@ -57,7 +59,7 @@ def conn_decorator_method(func):
 
 # Функция создания словаря всей партий parts_set
 @conn_decorator  # Декоратор подключения к бд
-def create_parts(cursor=None):
+def create_parts(cursor=None, conn=None):
     from src.classes import part_class
     inner_parts_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
@@ -77,7 +79,7 @@ def create_parts(cursor=None):
 
 
 @conn_decorator
-def create_machines(cursor=None):
+def create_machines(cursor=None, conn=None):
     from src.classes import machine_class
     inner_machines_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
@@ -130,7 +132,7 @@ def calculate_entity_queue_gain(machine_set, parts_set):
 
 
 @conn_decorator
-def allow_for_planing(cursor=None):
+def allow_for_planing(cursor=None, conn=None):
     sql = "SELECT flag_optimization FROM `production`.communication"
     cursor.execute(sql)
     res = cursor.fetchall()
@@ -152,10 +154,20 @@ def update_part_info(machine_set, parts_set):
 
 
 @conn_decorator
-def disable_for_planing(cursor=None):
+def disable_for_planing(cursor=None, conn=None):
     cursor.callproc("flagdown")
+    conn.commit()
 
 
 def send_queue_db(part_set):
     for id_part in part_set:
         part_set[id_part].send_queue()
+
+
+def flag(machine_set, parts_set, item):
+    flag = True
+    for group in machine_set[parts_set[item].current_entity].out_queue:
+        for part in group:
+            if item == part:
+                flag = False
+    return flag
