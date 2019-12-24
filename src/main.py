@@ -1,6 +1,6 @@
 import time
 
-from src.functions import functions
+from src.functions.functions import *
 
 
 # Функция для сортировки пула по занчениею веса партии
@@ -9,7 +9,7 @@ def sort_by_value(part):
 
 
 # Функция глобальной оптимизации
-@functions.conn_decorator
+@conn_decorator
 def global_optimize(cursor=None):
     # Для возможности изменения
     global parts_set
@@ -56,9 +56,9 @@ def global_optimize(cursor=None):
             heap.append(parts_set[item].part_id)
 
     # Находим ту установку, куда мы можем дальше пойти, у которой наименьшая очередь
-    functions.setting_next_entity(machine_set, parts_set)
+    setting_next_entity(machine_set, parts_set)
     # Вычисляем ценность партии
-    functions.calculate_entity_queue_gain(machine_set, parts_set)
+    calculate_entity_queue_gain(machine_set, parts_set)
     heap.sort(key=sort_by_value, reverse=True)
     # Сначала ищем партии, у которых появится МВХ, затем распихиваем обычные
     tmp_heap = heap.copy()
@@ -129,14 +129,14 @@ def global_optimize(cursor=None):
             # Раскомментируй строку ниже, если хочешь посмотреть что выдает и как работает цикл!!!!!!!!!!!!!!!!!!
             # print(res, parts_set[item].part_id, needs_to_stop, i)
     heap = tmp_heap.copy()
-    functions.setting_next_entity(machine_set, parts_set)
-    functions.calculate_entity_queue_gain(machine_set, parts_set)
+    setting_next_entity(machine_set, parts_set)
+    calculate_entity_queue_gain(machine_set, parts_set)
 
 
-parts_set = functions.create_parts()  # Вызываем функцию создания партий
-machine_set = functions.create_machines()  # Вызываем функцию создания партий
+parts_set = create_parts()  # Вызываем функцию создания партий
+machine_set = create_machines()  # Вызываем функцию создания партий
 heap = []  # Пул
-
+setting_current_entity(machine_set, parts_set)
 # Тест сортировки
 
 # test = [14, 3, 8, 5, 10]
@@ -145,12 +145,13 @@ heap = []  # Пул
 # print(test)
 # t = time.clock()
 while True:
-    a = functions.allow_for_planing()
+    a = allow_for_planing()
     if a:
         t1 = time.clock()
-        global_optimize()
-        functions.local_optimization(machine_set, parts_set)
-        functions.send_queue_db(parts_set)
-        functions.disable_for_planing()
+        # global_optimize()
+        update_part_info(machine_set, parts_set)
+        local_optimization(machine_set, parts_set)
+        send_queue_db(parts_set)
+        disable_for_planing()
         t2 = time.clock() - t1
         print(t2)

@@ -46,6 +46,43 @@ class Machine:
 
     # Группировка партий по рецептам
 
+    # def group_recipe(self, part_set):
+    #     group_values = []  # Список средней ценности всей группы
+    #     grouped_queue = []  # Сгруппированная очередь
+    #     group_has_values = {}  # Словарь для сопоставления группы партий и их ценности
+    #     amount_of_grouped = 0  # Количество сгруппированных партий
+    #     if len(self.in_queue) > 1:  # Группировка будет, только в случае если у нас есть что группировать
+    #         for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по количеству возможных групп
+    #             value = part_set[self.in_queue[amount_of_grouped]].value
+    #             group = []
+    #             for j in self.in_queue:
+    #                 if part_set[self.in_queue[amount_of_grouped]].recipe_id == part_set[j].recipe_id:
+    #                     group.append(j)
+    #                     amount_of_grouped += 1
+    #                     value += part_set[j].value
+    #             mean_value = value / amount_of_grouped
+    #             if len(group) > 1:  # Если группа состоит не из одной партии, то переставляем также партии в группах
+    #                 grouped_queue.append(self.transposition(part_set, group))
+    #                 self.in_queue = grouped_queue.copy()
+    #             else:  # Иначе просто идем дальше
+    #                 self.in_queue = grouped_queue.append(group)
+    #             group_values.append(mean_value)
+    #             if len(self.in_queue) <= amount_of_grouped:
+    #                 break
+    #         group_has_values = dict.fromkeys(group_values)
+    #         count = 0
+    #         for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
+    #             group_has_values[k] = self.in_queue[count].copy()
+    #             count += 1
+    #     elif len(self.in_queue) == 1:
+    #         # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
+    #         insert = self.in_queue.copy()
+    #         self.in_queue[0] = insert
+    #         group_values.append(part_set[self.in_queue[0][0]].value)
+    #         group_has_values[part_set[self.in_queue[0][0]].value] = self.in_queue.copy()
+    #
+    #     return group_values, group_has_values
+
     def group_recipe(self, part_set):
         group_values = []  # Список средней ценности всей группы
         grouped_queue = []  # Сгруппированная очередь
@@ -74,9 +111,8 @@ class Machine:
             for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
                 group_has_values[k] = self.in_queue[count].copy()
                 count += 1
-        elif len(
-                self.in_queue) == 1:  # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
-
+        elif len(self.in_queue) == 1:
+            # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
             insert = self.in_queue.copy()
             self.in_queue[0] = insert
             group_values.append(part_set[self.in_queue[0][0]].value)
@@ -128,8 +164,9 @@ class Machine:
     def parse_out_queue(self, machine_set, parts_set):
         max_next_queue = -1
         for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
-            if machine_set[parts_set[part].next_entity].len_queue > max_next_queue:
-                max_next_queue = machine_set[parts_set[part].next_entity].len_queue
+            # if machine_set[parts_set[part].next_entity].len_queue > max_next_queue:
+            if parts_set[part].next_entity.len_queue > max_next_queue:
+                max_next_queue = parts_set[part].next_entity.len_queue
         for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
-            parts_set[part].calculate_value(max_next_queue, machine_set[parts_set[part].next_entity].len_queue)
+            parts_set[part].calculate_value(max_next_queue, parts_set[part].next_entity.len_queue)
 

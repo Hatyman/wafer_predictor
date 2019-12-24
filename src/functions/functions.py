@@ -98,6 +98,14 @@ def local_optimization(machines_set, part_set):  # Функция нужна д�
         machines_set[machine].local_optimizer(part_set)
 
 
+def setting_current_entity(machine_set, parts_set):
+    for part in parts_set:
+        part.get_other_params()
+        index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if ent.machine_id in part.current_entity_list)[1]
+        machine_set[index].in_queue.append(part)
+        part.set_current_entity(machine_set[index])
+
+
 # Функция для получения доступа к данным об установках и выбор установки для партии с наименьшей очередью
 def setting_next_entity(machine_set, parts_set):
     for key, val in machine_set.items():
@@ -111,7 +119,8 @@ def setting_next_entity(machine_set, parts_set):
                 next_id = ent
                 min_queue = machine_set[ent].len_queue
         if next_id:
-            parts_set[part].set_next_entity(next_id)  # Записываем номер найденной установки в свойство
+            parts_set[part].set_next_entity(machine_set[next_id])
+            # parts_set[part].set_next_entity(next_id)   Записываем номер найденной установки в свойство
 
 
 # Функция для вычисления ценности всех партий, которые находятся в установках
@@ -127,6 +136,19 @@ def allow_for_planing(cursor=None):
     res = cursor.fetchall()
     flag = res[0]['flag_optimization']
     return flag
+
+
+def update_part_info(machine_set, parts_set):
+    for part in parts_set:
+        part.update_attr(machine_set)
+        try:
+            if not part.wait:
+                part.current_entity.out_queue[0].remove(part.part_id)
+                if not len(part.current_entity.out_queue[0]):
+                    part.current_entity.out_queue.remove([])
+
+        except ValueError:
+            pass
 
 
 @conn_decorator

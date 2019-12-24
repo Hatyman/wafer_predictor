@@ -1,4 +1,5 @@
 from src.functions import functions
+import numpy as np
 
 
 class Part:
@@ -29,18 +30,48 @@ class Part:
         self.get_current_time()
         self.get_prev_entity()
         self.get_next_entity()
+        # new coefficients
+        self.step = 0
+        self.delta_time = 5
+        self.factor_A = 0
+        self.factor_B = 0
+        self.group_number = 0
+        self.entity_number = 0
+        self.target_function = 0
+        self.current_entity_list = []
         print('Создана партия с id {0}: {1} [list_id: {2}]'.format(self.part_id, self.name, self.list_id))
 
     # Функция получения МВХ и установки, где партии сейчас надо быть
     @functions.conn_decorator_method
     def get_other_params(self, cursor=None):
+        self.current_entity_list = []
         sql = "SELECT m.machines_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `production`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
             self.recipe_id
         )
         cursor.execute(sql)
+        res = cursor.fetchall()
+
+        # self.current_entity = res['machines_id']
+        for row in res:
+            self.current_entity_list.append(row['machines_id'])
+
+    @functions.conn_decorator_method
+    def get_general_params(self, cursor=None):
+        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, " \
+              "part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(
+                self.part_id
+        )
+        cursor.execute(sql)
         res = cursor.fetchone()
 
-        self.current_entity = res['machines_id']
+        self.act_process = res['act_process']
+        self.queue = res['queue']
+        self.wait = res['wait']
+        self.reserve = res['reserve']
+        self.recipe_id = res['recipe_id']
+
+    def set_current_entity(self, value):
+        self.current_entity = value
 
     # Функция изменения оставшегося МВХ (на 20 минут) и сигнализирования, если МВХ истекает
     def dying(self):
@@ -73,26 +104,15 @@ class Part:
     #     self.further_time = int(res['time_of_process'])
 
     # Функция обновления всех (которые могут изменяться) параметров партии
-    @functions.conn_decorator_method
-    def update_attr(self, cursor=None):
+    def update_attr(self, machine_set):
 
-        sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(
-            self.part_id
-        )
-        cursor.execute(sql)
-        res = cursor.fetchone()
-
-        self.act_process = res['act_process']
-        self.queue = res['queue']
-        self.wait = res['wait']
-        self.reserve = res['reserve']
-        self.recipe_id = res['recipe_id']
+        self.get_general_params()
         self.get_next_entity()
         self.get_prev_entity()
         self.get_other_params()
         self.get_current_time()
-        self.calculate_value()
-
+        # self.calculate_value()
+        self.calculate_target_function()
 
     # Функция рассчета веса партии (пока пустая)
     def estimate(self):
@@ -102,9 +122,11 @@ class Part:
     @functions.conn_decorator_method
     def get_prev_entity(self, cursor=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
-        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
-            int(self.act_process) - 1,
-            self.list_id
+        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
+              "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
+              "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
+                int(self.act_process) - 1,
+                self.list_id
         )
         cursor.execute(sql)
         res = cursor.fetchall()
@@ -122,9 +144,11 @@ class Part:
     @functions.conn_decorator_method
     def get_next_entity(self, cursor=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
-        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
-            int(self.act_process) + 1,
-            self.list_id
+        sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
+              "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
+              "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
+                int(self.act_process) + 1,
+                self.list_id
         )
         cursor.execute(sql)
         res = cursor.fetchall()
@@ -159,7 +183,6 @@ class Part:
             )
             cursor.execute(sql)
 
-
     @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def reset_queue(self, cursor=None):
         sql = "UPDATE `production`.part SET queue = NULL WHERE part_id = {0}".format(
@@ -179,3 +202,12 @@ class Part:
             k_o = 1
         self.value = k_mts + k_p + k_o
 
+    def calculate_target_function(self):
+        if self.time_limit:
+            self.factor_B = 1
+        else:
+            self.factor_B = 0
+        # При сортировке по очереди следующих уствновок, следует просто приемнить метод
+        # list_name.sort(key=lambda x: x.next_entity.len_queue) Он отсортирует список по возрастанию очередей
+        # в следующих устновках (теперь там хранится ссылка на объект установки)
+        self.target_function = self.step * self.delta_time * self.factor_A + np.exp(self.step * self.delta_time) * self.factor_B
