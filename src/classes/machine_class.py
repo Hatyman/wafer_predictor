@@ -84,49 +84,63 @@ class Machine:
     #
     #     return group_values, group_has_values
 
-    def group_recipe(self, part_set):
-        group_values = []  # Список средней ценности всей группы
-        grouped_queue = []  # Сгруппированная очередь
-        group_has_values = {}  # Словарь для сопоставления группы партий и их ценности
-        amount_of_grouped = 0  # Количество сгруппированных партий
-        if len(self.in_queue) > 1:  # Группировка будет, только в случае если у нас есть что группировать
-            for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по количеству возможных групп
-                value = part_set[self.in_queue[amount_of_grouped]].value
-                group = []
-                for j in self.in_queue:
-                    if part_set[self.in_queue[amount_of_grouped]].recipe_id == part_set[j].recipe_id:
-                        group.append(j)
-                        amount_of_grouped += 1
-                        value += part_set[j].value
-                mean_value = value / amount_of_grouped
-                if len(group) > 1:  # Если группа состоит не из одной партии, то переставляем также партии в группах
-                    grouped_queue.append(self.transposition(part_set, group))
-                    self.in_queue = grouped_queue.copy()
-                else:  # Иначе просто идем дальше
-                    self.in_queue = grouped_queue.append(group)
-                group_values.append(mean_value)
-                if len(self.in_queue) <= amount_of_grouped:
-                    break
-            group_has_values = dict.fromkeys(group_values)
-            count = 0
-            for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
-                group_has_values[k] = self.in_queue[count].copy()
-                count += 1
-        elif len(self.in_queue) == 1:
-            # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
-            insert = self.in_queue.copy()
-            self.in_queue[0] = insert
-            group_values.append(part_set[self.in_queue[0][0]].value)
-            group_has_values[part_set[self.in_queue[0][0]].value] = self.in_queue.copy()
+    # def group_recipe(self, part_set):
+    #     group_values = []  # Список средней ценности всей группы
+    #     grouped_queue = []  # Сгруппированная очередь
+    #     group_has_values = {}  # Словарь для сопоставления группы партий и их ценности
+    #     amount_of_grouped = 0  # Количество сгруппированных партий
+    #     if len(self.in_queue) > 1:  # Группировка будет, только в случае если у нас есть что группировать
+    #         for i in range(self.recipes_count):  # Устанавлеваем порядок очереди по количеству возможных групп
+    #             values = []
+    #             group = []
+    #             for j in self.in_queue:
+    #                 if part_set[self.in_queue[amount_of_grouped]].recipe_id == part_set[j].recipe_id:
+    #                     group.append(j)
+    #                     amount_of_grouped += 1
+    #                     values.append(part_set[j].target_function)
+    #             # mean_value = value / amount_of_grouped
+    #             max_value = max(values)
+    #             if len(group) > 1:  # Если группа состоит не из одной партии, то переставляем также партии в группах
+    #                 grouped_queue.append(self.transposition(part_set, group))
+    #                 self.in_queue = grouped_queue.copy()
+    #             else:  # Иначе просто идем дальше
+    #                 self.in_queue = grouped_queue.append(group)
+    #             # group_values.append(mean_value)
+    #             group_values.append(max_value)
+    #             if len(self.in_queue) <= amount_of_grouped:
+    #                 break
+    #         group_has_values = dict.fromkeys(group_values)
+    #         count = 0
+    #         for k in group_values:  # Заполняем словарь соответствия ценности групп к самим группам
+    #             group_has_values[k] = self.in_queue[count].copy()
+    #             count += 1
+    #     elif len(self.in_queue) == 1:
+    #         # Если очередь состоит из одной партии, то толкаем ее в конец спланированной очереди
+    #         insert = self.in_queue.copy()
+    #         self.in_queue[0] = insert
+    #         group_values.append(part_set[self.in_queue[0][0]].value)
+    #         group_has_values[part_set[self.in_queue[0][0]].value] = self.in_queue.copy()
+    #
+    #     return group_values, group_has_values
 
-        return group_values, group_has_values
+    def group_recipe_rebuild(self):
+        temp_dict = {}
+        for part in self.in_queue:
+            if not temp_dict.get(part.recipe_id):
+                temp_dict[part.recipe_id] = [part]
+            else:
+                temp_dict[part.recipe_id].append(part)
+        for key, arr in temp_dict.items():
+            temp_dict[key] = max(part.target_function for part in arr), arr.sort(key=lambda x: x.target_function, reverse=True)
+        grouped_parts = [group for value, group in sorted(temp_dict.values(), reverse=True)]
+        return grouped_parts
 
-    def transposition(self, part_set, group):  # переставляем партии в группе, исходя из их ценности
-        sorted_group = []
+    @staticmethod
+    def transposition(part_set, group):  # переставляем партии в группе, исходя из их ценности
         sorted_value = []
         if len(group) > 1:
             for i in group:
-                sorted_value.append(part_set[i].value)
+                sorted_value.append(part_set[i].target_function)
 
         sorted_group = [x for _, x in sorted(zip(sorted_value, group), reverse=True)]
 

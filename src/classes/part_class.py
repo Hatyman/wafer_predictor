@@ -63,9 +63,7 @@ class Part:
     @functions.conn_decorator_method
     def get_general_params(self, cursor=None):
         sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, " \
-              "part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(
-                self.part_id
-        )
+              "part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(self.part_id)
         cursor.execute(sql)
         res = cursor.fetchone()
 
@@ -131,8 +129,7 @@ class Part:
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
               "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
                 int(self.act_process) - 1,
-                self.list_id
-        )
+                self.list_id)
         cursor.execute(sql)
         res = cursor.fetchall()
 
@@ -146,17 +143,15 @@ class Part:
                 self.least_tl = cash['time_limit']
             self.time_limit = cash['time_limit']
 
-
     # Функция получения прошлой установки
     @functions.conn_decorator_method
     def get_next_entity(self, cursor=None):
-        # Ищем все машины, которые могли быть по рецепту предыдущего шага
+        # Ищем все машины, которые могли быть по рецепту следующего шага
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
               "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
                 int(self.act_process) + 1,
-                self.list_id
-        )
+                self.list_id)
         cursor.execute(sql)
         res = cursor.fetchall()
 
@@ -218,4 +213,5 @@ class Part:
         # При сортировке по очереди следующих уствновок, следует просто приемнить метод
         # list_name.sort(key=lambda x: x.next_entity.len_queue) Он отсортирует список по возрастанию очередей
         # в следующих устновках (теперь там хранится ссылка на объект установки)
-        self.target_function = self.step * self.delta_time * self.factor_A + np.exp(self.step * self.delta_time) * self.factor_B
+        self.target_function = self.step * self.delta_time * self.factor_A + np.exp(
+            self.step * self.delta_time) * self.factor_B

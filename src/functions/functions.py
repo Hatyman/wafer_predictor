@@ -1,6 +1,7 @@
 import pymysql.cursors
 import sys
 
+
 # Функция подключения к бд
 def connection(pwd='91xz271999'):
     # Подключение к бд убрали в обёртку (можно еще продублировать в файл отдельный как функцию)
@@ -103,7 +104,7 @@ def local_optimization(machines_set, part_set):  # Функция нужна д�
 def setting_current_entity(machine_set, parts_set):
     for part in parts_set:
         part.get_other_params()
-        index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if ent.machine_id in part.current_entity_list)[1]
+        _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if ent.machine_id in part.current_entity_list)
         machine_set[index].in_queue.append(part)
         part.set_current_entity(machine_set[index])
 
