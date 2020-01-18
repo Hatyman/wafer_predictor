@@ -103,27 +103,36 @@ def local_optimization(machines_set, part_set):  # Функция нужна д�
 
 def setting_current_entity(machine_set, parts_set):
     for part in parts_set:
-        part.get_other_params()
-        _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if ent.machine_id in part.current_entity_list)
-        machine_set[index].in_queue.append(part)
+        part.update_attr()
+        _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
+                       ent.machine_id in part.current_entity_list)
+        machine_set[index].add_part_to_queue(part)
         part.set_current_entity(machine_set[index])
 
 
-# Функция для получения доступа к данным об установках и выбор установки для партии с наименьшей очередью
 def setting_next_entity(machine_set, parts_set):
-    for key, val in machine_set.items():
-        val.get_len_queue()
     for part in parts_set:
-        parts_set[part].get_next_entity()  # Получаем/обновляем список установок: куда дальше идти
-        min_queue = 999
-        next_id = 0
-        for ent in parts_set[part].next_entity_list:  # Перебираем все установки, куда мы можем пойти (учитывать флаг запрета???)
-            if machine_set[ent].len_queue < min_queue and (not machine_set[ent].forbidden):
-                next_id = ent
-                min_queue = machine_set[ent].len_queue
-        if next_id:
-            parts_set[part].set_next_entity(machine_set[next_id])
-            # parts_set[part].set_next_entity(next_id)   Записываем номер найденной установки в свойство
+        part.update_attr()
+        _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
+                       ent.machine_id in part.next_entity_list)
+        part.set_next_entity(machine_set[index])
+
+
+# # Функция для получения доступа к данным об установках и выбор установки для партии с наименьшей очередью
+# def setting_next_entity(machine_set, parts_set):
+#     for key, val in machine_set.items():
+#         val.get_len_queue()
+#     for part in parts_set:
+#         parts_set[part].get_next_entity()  # Получаем/обновляем список установок: куда дальше идти
+#         min_queue = 999
+#         next_id = 0
+#         for ent in parts_set[part].next_entity_list:  # Перебираем все установки, куда мы можем пойти (учитывать флаг запрета???)
+#             if machine_set[ent].len_queue < min_queue and (not machine_set[ent].forbidden):
+#                 next_id = ent
+#                 min_queue = machine_set[ent].len_queue
+#         if next_id:
+#             parts_set[part].set_next_entity(machine_set[next_id])
+#             # parts_set[part].set_next_entity(next_id)   Записываем номер найденной установки в свойство
 
 
 # Функция для вычисления ценности всех партий, которые находятся в установках

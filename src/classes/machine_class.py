@@ -1,4 +1,5 @@
 from src.functions import functions
+import numpy as np
 
 
 # Завтра еще подредачу, не помню что еще нужно добавить
@@ -125,15 +126,17 @@ class Machine:
 
     def group_recipe_rebuild(self):
         temp_dict = {}
+        self.in_queue.extend(np.reshape(self.out_queue, -1))
         for part in self.in_queue:
             if not temp_dict.get(part.recipe_id):
                 temp_dict[part.recipe_id] = [part]
             else:
                 temp_dict[part.recipe_id].append(part)
         for key, arr in temp_dict.items():
-            temp_dict[key] = max(part.target_function for part in arr), arr.sort(key=lambda x: x.target_function, reverse=True)
-        grouped_parts = [group for value, group in sorted(temp_dict.values(), reverse=True)]
-        return grouped_parts
+            temp_dict[key] = max(part.target_function for part in arr), arr.sort(key=lambda x: x.target_function,
+                                                                                 reverse=True)
+        self.out_queue = [group for value, group in sorted(temp_dict.values(), reverse=True)]
+        self.in_queue.clear()
 
     @staticmethod
     def transposition(part_set, group):  # переставляем партии в группе, исходя из их ценности
@@ -157,13 +160,23 @@ class Machine:
                 part_set[self.out_queue[i][j]].queue = count
                 count += 1
 
+    def group_entities(self):
+        self.in_queue.extend(np.reshape(self.out_queue, -1))
+        self.in_queue.sort(key=lambda x: x.part.next_entity.len_queue)
+        self.out_queue = [self.in_queue.copy()]
+        self.in_queue.clear()
+
     def local_optimizer(self, part_set):
         if len(self.in_queue) > 0:
-            group_values, group_has_values = self.group_recipe(part_set)
-            self.optimize_groups(group_values, group_has_values)
-            if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
-                self.set_individual_queue(part_set)
-            self.in_queue.clear()
+            # group_values, group_has_values = self.group_recipe(part_set)
+            # self.optimize_groups(group_values, group_has_values)
+            # if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
+            #     self.set_individual_queue(part_set)
+            if self.machine_id in (11, 40, 41, 42) or len(self.in_queue) > 4:
+                self.group_entities()
+            else:
+                self.group_recipe_rebuild()
+            # self.in_queue.clear()
             print(self.out_queue)
             print(self.name)
 
@@ -183,4 +196,8 @@ class Machine:
                 max_next_queue = parts_set[part].next_entity.len_queue
         for part in self.in_queue:  # Здесь не уверен что парсить - вход или выход
             parts_set[part].calculate_value(max_next_queue, parts_set[part].next_entity.len_queue)
+
+    def add_part_to_queue(self, part):
+        self.in_queue.append(part)
+        self.get_len_queue()
 
