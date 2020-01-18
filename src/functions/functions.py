@@ -1,5 +1,6 @@
 import pymysql.cursors
 import sys
+import numpy as np
 
 
 # Функция подключения к бд
@@ -158,9 +159,13 @@ def update_part_info(machine_set, parts_set):
                 part.current_entity.out_queue[0].remove(part.part_id)
                 if not len(part.current_entity.out_queue[0]):
                     part.current_entity.out_queue.remove([])
-
         except ValueError:
             pass
+        if part.wait and part.queue is None and part not in np.reshape(part.current_entity.out_queue, -1):
+            _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
+                           ent.machine_id in part.current_entity_list)
+            machine_set[index].add_part_to_queue(part)
+            part.set_current_entity(machine_set[index])
 
 
 @conn_decorator

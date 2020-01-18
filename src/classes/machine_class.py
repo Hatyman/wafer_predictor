@@ -153,12 +153,14 @@ class Machine:
 
         self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
-    def set_individual_queue(self, part_set):  # Установка номера очереди в свойство партии
-        count = 1
-        for i in range(len(self.out_queue)):
-            for j in range(len(self.out_queue[i])):
-                part_set[self.out_queue[i][j]].queue = count
-                count += 1
+    def set_individual_queue(self):  # Установка номера очереди в свойство партии
+        # count = 1
+        # for i in range(len(self.out_queue)):
+        #     for j in range(len(self.out_queue[i])):
+        #         part_set[self.out_queue[i][j]].queue = count
+        #         count += 1
+        for index, part in enumerate(np.reshape(self.out_queue, -1)):
+            part.queue = 1 + index
 
     def group_entities(self):
         self.in_queue.extend(np.reshape(self.out_queue, -1))
@@ -172,10 +174,12 @@ class Machine:
             # self.optimize_groups(group_values, group_has_values)
             # if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
             #     self.set_individual_queue(part_set)
-            if self.machine_id in (11, 40, 41, 42) or len(self.in_queue) > 4:
+            # if self.machine_id not in (11, 40, 41, 42) or len(self.in_queue) > 4:
+            if len(self.in_queue) > 4:
                 self.group_entities()
             else:
                 self.group_recipe_rebuild()
+            self.set_individual_queue()
             # self.in_queue.clear()
             print(self.out_queue)
             print(self.name)

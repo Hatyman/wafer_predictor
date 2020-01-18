@@ -166,8 +166,8 @@ def global_optimize(cursor=None):
 
 parts_set = create_parts()  # Вызываем функцию создания партий
 machine_set = create_machines()  # Вызываем функцию создания партий
-heap = []  # Пул
-setting_current_entity(machine_set, parts_set)
+# heap = []  # Пул
+# setting_current_entity(machine_set, parts_set)
 # Тест сортировки
 
 # test = [14, 3, 8, 5, 10]
