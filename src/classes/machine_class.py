@@ -168,14 +168,14 @@ class Machine:
         self.out_queue = [self.in_queue.copy()]
         self.in_queue.clear()
 
-    def local_optimizer(self, part_set):
+    def local_optimizer(self):
         if len(self.in_queue) > 0:
             # group_values, group_has_values = self.group_recipe(part_set)
             # self.optimize_groups(group_values, group_has_values)
             # if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
             #     self.set_individual_queue(part_set)
             # if self.machine_id not in (11, 40, 41, 42) or len(self.in_queue) > 4:
-            if len(self.in_queue) > 4:
+            if len(self.in_queue) > 4:  # There must be check for narrow entity
                 self.group_entities()
             else:
                 self.group_recipe_rebuild()

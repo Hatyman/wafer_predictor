@@ -97,9 +97,9 @@ def create_machines(cursor=None, conn=None):
     return inner_machines_set
 
 
-def local_optimization(machines_set, part_set):  # Функция нужна для передачи в методы каждой
+def local_optimization(machines_set):  # Функция нужна для передачи в методы каждой
     for machine in machines_set:  # машины сет партий и запуске в глобальном файле
-        machines_set[machine].local_optimizer(part_set)
+        machines_set[machine].local_optimizer()
 
 
 def setting_current_entity(machine_set, parts_set):
@@ -153,10 +153,14 @@ def allow_for_planing(cursor=None, conn=None):
 
 def update_part_info(machine_set, parts_set):
     for part in parts_set:
-        part.update_attr(machine_set)
+        part.update_attr()
+        _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
+                       ent.machine_id in part.next_entity_list)
+        part.set_next_entity(machine_set[index])
         try:
             if not part.wait:
-                part.current_entity.out_queue[0].remove(part.part_id)
+                part.reset_queue()
+                part.current_entity.out_queue[0].remove(part)
                 if not len(part.current_entity.out_queue[0]):
                     part.current_entity.out_queue.remove([])
         except ValueError:

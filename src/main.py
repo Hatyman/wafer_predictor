@@ -181,7 +181,7 @@ while True:
         t1 = time.clock()
         # global_optimize()
         update_part_info(machine_set, parts_set)
-        local_optimization(machine_set, parts_set)
+        local_optimization(machine_set)
         send_queue_db(parts_set)
         disable_for_planing()
         t2 = time.clock() - t1

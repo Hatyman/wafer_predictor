@@ -107,7 +107,7 @@ class Part:
     #     self.further_time = int(res['time_of_process'])
 
     # Функция обновления всех (которые могут изменяться) параметров партии
-    def update_attr(self, machine_set):
+    def update_attr(self):
 
         self.get_general_params()
         self.get_next_entity()
@@ -192,6 +192,7 @@ class Part:
             self.part_id
         )
         cursor.execute(sql)
+        conn.commit()
 
     def calculate_value(self, max_next_queue=0, next_queue=0):
         if self.time_limit:
