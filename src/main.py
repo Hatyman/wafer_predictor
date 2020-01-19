@@ -2,7 +2,6 @@ import time
 
 from src.functions.functions import *
 import sys
-from src.functions import functions
 
 
 # Функция для сортировки пула по занчениею веса партии
@@ -53,7 +52,7 @@ def global_optimize(cursor=None):
         print('Номер в очереди : {0}'.format(parts_set[item].queue))
         print('Партия в хипе: {0}'.format(parts_set[item].part_id not in heap))
         try:
-            if (functions.flag(machine_set, parts_set, item)) and parts_set[item].time_limit:
+            if (flag(machine_set, parts_set, item)) and parts_set[item].time_limit:
                 # Добавляем в очередь, если установка доступна для планирования
                 if parts_set[item].queue is None:
                     machine_set[parts_set[item].current_entity].in_queue.append(item)

@@ -160,6 +160,7 @@ def update_part_info(machine_set, parts_set):
         try:
             if not part.wait:
                 part.reset_queue()
+                part.queue = None
                 part.current_entity.out_queue[0].remove(part)
                 if not len(part.current_entity.out_queue[0]):
                     part.current_entity.out_queue.remove([])
@@ -179,8 +180,8 @@ def disable_for_planing(cursor=None, conn=None):
 
 
 def send_queue_db(part_set):
-    for id_part in part_set:
-        part_set[id_part].send_queue()
+    for part in part_set:
+        part.send_queue()
 
 
 def flag(machine_set, parts_set, item):
