@@ -125,17 +125,44 @@ class Machine:
     #     return group_values, group_has_values
 
     def group_recipe_rebuild(self):
+        """
+        Метод, который оптимизирует очередь на установку по рецептам, чтобы не тратить лишние ресурсы
+        при их смене.
+
+        Здесь все партии из временной и оптимизированной очередей группируются по рецептам, затем
+        внутри каждой группы происходит сортировка по целевым функциям (target_function) (это значение
+        вычисляется в фунции обновления данных партии update_part_info(machine_set, parts_set)).
+
+        Наконец для каждой группы выявляется максимальное значение целевой функции, а оптимизированная
+        очередь составляется по убыванию максимальных целевых функций групп и имеет вид:
+
+        [[PART1 - партия, PART2, PART3 ...] - группа партий с одним рецептом, [...] ...] - очередь на
+        установку,
+
+        где [PART1 - партия, PART2, PART3 ...] - группа патрий с наивысшим максимальным
+        значением целевой функции среди всех групп, PART1 - партия с наибольшей целевой функцией в группе.
+        """
         temp_dict = {}
+        # Объединяем все имеющиеся партии в оптимизированной и временной очередях на установку.
         self.in_queue.extend(np.reshape(self.out_queue, -1))
         for part in self.in_queue:
+            # Если нет в словаре группы с таким id рецепта, то создаём группу рецепта с этой партией,
+            # иначе добавляем партию в группу.
             if not temp_dict.get(part.recipe_id):
                 temp_dict[part.recipe_id] = [part]
             else:
                 temp_dict[part.recipe_id].append(part)
+        # После того, как все группы сформированы, находим в каждой из них максимальное значение
+        # целевой функции и добавляем его в кортеж к сортированной по убыванию целевых фунций
+        # группе партий. Таким образом получается:
+        # словарь[рецепт] = (максимальная целевая функция, сортированная группа).
         for key, arr in temp_dict.items():
             temp_dict[key] = max(part.target_function for part in arr), arr.sort(key=lambda x: x.target_function,
                                                                                  reverse=True)
+        # Формируем оптимизированную очередь, добавляя группы по убыванию максимальных целевых функций.
         self.out_queue = [group for value, group in sorted(temp_dict.values(), reverse=True)]
+        # Чистим временную очередь, так как партии, что в нее были
+        # добавлены, сортированы и добавлены в out_queue.
         self.in_queue.clear()
 
     @staticmethod
@@ -154,33 +181,52 @@ class Machine:
         self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
     def set_individual_queue(self):  # Установка номера очереди в свойство партии
-        # count = 1
-        # for i in range(len(self.out_queue)):
-        #     for j in range(len(self.out_queue[i])):
-        #         part_set[self.out_queue[i][j]].queue = count
-        #         count += 1
         for index, part in enumerate(np.reshape(self.out_queue, -1)):
+            # Начинается с 1 для матлаба
             part.queue = 1 + index
 
     def group_entities(self):
+        """
+        Метод, который оптимизирует очередь исходя из очередей на следующую установку партий.
+
+        Здесь, все партии, которые уже имеются в оптимизированной очереди (out_queue),
+        добавляются к партиям во временной очереди (in_queue). Затем партии сортируются по
+        возрастанию длин очередей установок, куда им следует идти в следующем шаге.
+
+        В итоге заполняется оптимизированная очередь на установку по шаблону:
+
+        [[PART1 - партия, PART2, PART3 ...] - группа партий] , где у PART1 наименьшая очередь
+        на следующей установке.
+        """
         self.in_queue.extend(np.reshape(self.out_queue, -1))
         self.in_queue.sort(key=lambda x: x.part.next_entity.len_queue)
         self.out_queue = [self.in_queue.copy()]
+        # Чистим временную очередь, так как партии, что в нее были
+        # добавлены, сортированы и добавлены в out_queue.
         self.in_queue.clear()
 
     def local_optimizer(self):
+        """
+        Метод, который оптимизирует очередь с учетом партий
+        во временной очереди (in_queue) и в уже оптимизированной ранее
+        (out_queue). Таким образом, каждый раз очередь полностью перетасовывается.
+
+        2 Режима оптимизации:
+
+        1 - По установкам (для узких мест)
+
+        2 - По рецептам (по умолчанию)
+        """
         if len(self.in_queue) > 0:
-            # group_values, group_has_values = self.group_recipe(part_set)
-            # self.optimize_groups(group_values, group_has_values)
-            # if (self.machine_id != 11 and self.machine_id != 40 and self.machine_id != 41 and self.machine_id != 42) or len(self.in_queue) > 4:
-            #     self.set_individual_queue(part_set)
-            # if self.machine_id not in (11, 40, 41, 42) or len(self.in_queue) > 4:
-            if len(self.in_queue) > 4:  # There must be check for narrow entity
+            # Здесь проверка на узкое место (условие пока временное).
+            if len(self.in_queue) > 4:
+                # Оптимизация по установкам.
                 self.group_entities()
             else:
+                # Оптимизация по рецептам.
                 self.group_recipe_rebuild()
+            # Запись каждой партии её номер в очереди (необходимо для отправки в БД).
             self.set_individual_queue()
-            # self.in_queue.clear()
             print(self.out_queue)
             print(self.name)
 

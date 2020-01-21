@@ -108,12 +108,15 @@ def global_optimize(cursor=None):
                             tmp_heap.remove(item)
                         else:
                             for ent in res:
-                                if not machine_set[ent['machines_machines_id']].forbidden or (machine_set[ent['machines_machines_id']].who_forbidden == item ):
+                                if not machine_set[ent['machines_machines_id']].forbidden or (
+                                        machine_set[ent['machines_machines_id']].who_forbidden == item):
                                     machine_set[ent['machines_machines_id']].in_queue.append(item)
                                     parts_set[item].current_entity = ent['machines_machines_id']
                                     tmp_heap.remove(item)
                                     break
-                        print("Выводим очередь на установку {0}, если партия куда-нибудь добавилась:".format(machine_set[parts_set[item].current_entity].machine_id), machine_set[parts_set[item].current_entity].in_queue)
+                        print("Выводим очередь на установку {0}, если партия куда-нибудь добавилась:".format(
+                            machine_set[parts_set[item].current_entity].machine_id),
+                              machine_set[parts_set[item].current_entity].in_queue)
                         needs_to_stop = True
                         break
                     else:
@@ -127,7 +130,9 @@ def global_optimize(cursor=None):
                                 for _part in items_queue:
                                     time_queue += parts_set[_part].time_of_process
 
-                            if (time_queue < min_time_queue) and (not machine_set[ent['machines_machines_id']].forbidden) or (machine_set[ent['machines_machines_id']].who_forbidden == item):
+                            if (time_queue < min_time_queue) and (
+                            not machine_set[ent['machines_machines_id']].forbidden) or (
+                                    machine_set[ent['machines_machines_id']].who_forbidden == item):
                                 ent_id = ent['machines_machines_id']
                                 min_time_queue = time_queue
                                 time_need += min_time_queue
@@ -165,23 +170,13 @@ def global_optimize(cursor=None):
 
 parts_set = create_parts()  # Вызываем функцию создания партий
 machine_set = create_machines()  # Вызываем функцию создания партий
-# heap = []  # Пул
-# setting_current_entity(machine_set, parts_set)
-# Тест сортировки
-
-# test = [14, 3, 8, 5, 10]
-# print(test)
-# test.sort(key=sort_by_value, reverse=True)
-# print(test)
-# t = time.clock()
 while True:
-    a = allow_for_planing()
+    a = allow_for_planing()  # Проверка разрешения от модели на планирование
     if a:
-        t1 = time.clock()
-        # global_optimize()
-        update_part_info(machine_set, parts_set)
-        local_optimization(machine_set)
-        send_queue_db(parts_set)
-        disable_for_planing()
-        t2 = time.clock() - t1
+        t1 = time.clock()  # Время начала планирования (для замера времени работы планировкщика)
+        update_part_info(machine_set, parts_set)  # Обновление всех параметров партий
+        local_optimization(machine_set)  # Работа с очередями
+        send_queue_db(parts_set)  # Отправка очередей
+        disable_for_planing()  # Выставляем флаг для работы модели
+        t2 = time.clock() - t1  # Замер времени
         print(t2)

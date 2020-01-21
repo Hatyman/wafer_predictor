@@ -106,15 +106,33 @@ class Part:
     #
     #     self.further_time = int(res['time_of_process'])
 
-    # Функция обновления всех (которые могут изменяться) параметров партии
     def update_attr(self):
+        """
+        Метод обновления всех (которые могут изменяться) параметров партии.
 
+        Здесь обновляются:
+
+        · списки установок для текущего и следующего шагов;
+
+        · выполняется ли партия в установке;
+
+        · id рецепта;
+
+        · шаг по маршрутному листу;
+
+        · время выполнения текущего рецепта;
+
+        · МВХ (если есть);
+
+        · номер в очереди на установку.
+
+        Также рассчитывается целевая функция.
+        """
         self.get_general_params()
         self.get_next_entity()
         self.get_prev_entity()
         self.get_other_params()
         self.get_current_time()
-        # self.calculate_value()
         self.calculate_target_function()
 
     # Функция рассчета веса партии (пока пустая)
@@ -128,8 +146,8 @@ class Part:
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
               "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
-                int(self.act_process) - 1,
-                self.list_id)
+            int(self.act_process) - 1,
+            self.list_id)
         cursor.execute(sql)
         res = cursor.fetchall()
 
@@ -150,8 +168,8 @@ class Part:
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
               "WHERE recipe_recipe_id=(SELECT `{0}` FROM `production`.list WHERE list_id={1})".format(
-                int(self.act_process) + 1,
-                self.list_id)
+            int(self.act_process) + 1,
+            self.list_id)
         cursor.execute(sql)
         res = cursor.fetchall()
 
@@ -207,12 +225,14 @@ class Part:
         self.value = k_mts + k_p + k_o
 
     def calculate_target_function(self):
+        """
+        Метод расчета целевой фнукции
+        """
+        # Если есть МВХ, включаем экспоненциальную составляющую
         if self.time_limit:
             self.factor_B = 1
         else:
             self.factor_B = 0
-        # При сортировке по очереди следующих уствновок, следует просто приемнить метод
-        # list_name.sort(key=lambda x: x.next_entity.len_queue) Он отсортирует список по возрастанию очередей
-        # в следующих устновках (теперь там хранится ссылка на объект установки)
-        self.target_function = self.step * self.delta_time * self.factor_A + np.exp(
-            self.step * self.delta_time) * self.factor_B
+        self.target_function = self.step * self.delta_time * self.factor_A + \
+            np.exp(self.step * self.delta_time) * self.factor_B
+        self.step += 1
