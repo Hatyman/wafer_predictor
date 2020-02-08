@@ -1,6 +1,6 @@
 import pymysql.cursors
-import sys
 import numpy as np
+import sys
 
 
 # Функция подключения к бд
@@ -20,7 +20,7 @@ def connection(pwd='91xz271999'):
 def conn_decorator(func):
     def wrapper():  # Сама обертка
         try:
-            conn = connection()  # На вход передавать пароль для бд (по умолчанию будет 91xz271999)
+            conn = connection()  # На вход передавать   пароль для бд (по умолчанию будет 91xz271999)
         except pymysql.err.OperationalError:
             conn = connection('')
 
@@ -63,7 +63,7 @@ def conn_decorator_method(func):
 @conn_decorator  # Декоратор подключения к бд
 def create_parts(cursor=None, conn=None):
     from src.classes import part_class
-    inner_parts_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
+    inner_parts_set = []  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
     sql = "SELECT * FROM `production`.part"
     cursor.execute(sql)  # Запрашиваем из БД данные
@@ -73,9 +73,9 @@ def create_parts(cursor=None, conn=None):
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
         part_id, name, list_id, act_process, queue, reserve, wait, recipe_id, priority = row
         # Динамически создаем объекты партий
-        inner_parts_set[row['part_id']] = part_class.Part(row[part_id], row[name], row[list_id], row[act_process],
-                                                          row[queue], row[reserve], row[wait], row[recipe_id],
-                                                          row[priority])
+        inner_parts_set.append(part_class.Part(row[part_id], row[name], row[list_id], row[act_process],
+              row[queue], row[reserve], row[wait], row[recipe_id],
+              row[priority]))
 
     return inner_parts_set
 
@@ -83,17 +83,17 @@ def create_parts(cursor=None, conn=None):
 @conn_decorator
 def create_machines(cursor=None, conn=None):
     from src.classes import machine_class
-    inner_machines_set = {}  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
+    inner_machines_set = []  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
     sql = "SELECT * FROM `production`.machines"
     cursor.execute(sql)  # Запрашиваем из БД данные
     res = cursor.fetchall()  # Превращаем в удобочитаемый вид
 
     for row in res:  # Обходим то, что получили
-        # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
+        # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить
         # Динамически создаем объекты партий
-        inner_machines_set[row['machines_id']] = machine_class.Machine(row['machines_id'], row['work_stream_number'],
-                                                                       row['broken'])
+        inner_machines_set.append(machine_class.Machine(row['machines_id'], row['work_stream_number'],
+           row['broken']))
     return inner_machines_set
 
 
@@ -106,7 +106,7 @@ def local_optimization(machines_set):
     :param machines_set: Массив доступных установок
     """
     for machine in machines_set:
-        machines_set[machine].local_optimizer()
+        machine.local_optimizer()
 
 
 def setting_current_entity(machine_set, parts_set):
@@ -180,6 +180,11 @@ def update_part_info(machine_set, parts_set):
                        ent.machine_id in part.next_entity_list)
         # Записываем соответствующую установку в поле объекта.
         part.set_next_entity(machine_set[index])
+        if type(part.current_entity) == int:
+            _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
+                           ent.machine_id in part.current_entity_list)
+            # Добавляем партию во временную (ноптимизированную) чередь на установку.
+            part.set_current_entity(machine_set[index])
         try:
             # Если партия зашла в установку, она удаляется из текущей очереди,
             # номер в очереди устанавливается на None и обновляется база данных.
@@ -190,7 +195,7 @@ def update_part_info(machine_set, parts_set):
                 # Удаление партии из очереди.
                 part.current_entity.out_queue[0].remove(part)
                 # (Защита) Если партий в группе не осталось, удаляем группу.
-                if not len(part.current_entity.out_queue[0]):
+                if not len(part.current_entity.out_queue[0] and len(part.current_entity.out_queue > 1)):
                     part.current_entity.out_queue.remove([])
         except ValueError:
             pass

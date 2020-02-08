@@ -15,7 +15,7 @@ class Machine:
         self.who_forbidden = ""
         self.endQueue = 0
         self.len_queue = 0
-        self.out_queue = []
+        self.out_queue = [[]]
         self.group_values = []
         self.recipes_count = None
         self.get_groups()
@@ -144,7 +144,10 @@ class Machine:
         """
         temp_dict = {}
         # Объединяем все имеющиеся партии в оптимизированной и временной очередях на установку.
-        self.in_queue.extend(np.reshape(self.out_queue, -1))
+        try:
+            self.in_queue.extend(np.hstack(self.out_queue))
+        except Exception:
+            print(Exception)
         for part in self.in_queue:
             # Если нет в словаре группы с таким id рецепта, то создаём группу рецепта с этой партией,
             # иначе добавляем партию в группу.
@@ -157,10 +160,10 @@ class Machine:
         # группе партий. Таким образом получается:
         # словарь[рецепт] = (максимальная целевая функция, сортированная группа).
         for key, arr in temp_dict.items():
-            temp_dict[key] = max(part.target_function for part in arr), arr.sort(key=lambda x: x.target_function,
-                                                                                 reverse=True)
+            temp_dict[key] = max(part.target_function for part in arr), sorted(arr, key=lambda x: x.target_function,
+                                                                               reverse=True)
         # Формируем оптимизированную очередь, добавляя группы по убыванию максимальных целевых функций.
-        self.out_queue = [group for value, group in sorted(temp_dict.values(), reverse=True)]
+        self.out_queue = [group for value, group in sorted(temp_dict.values(), key=lambda x: x[0], reverse=True)]
         # Чистим временную очередь, так как партии, что в нее были
         # добавлены, сортированы и добавлены в out_queue.
         self.in_queue.clear()
@@ -181,7 +184,7 @@ class Machine:
         self.out_queue.extend([x for _, x in sorted(zip(group_values, self.in_queue))])
 
     def set_individual_queue(self):  # Установка номера очереди в свойство партии
-        for index, part in enumerate(np.reshape(self.out_queue, -1)):
+        for index, part in enumerate(np.hstack(self.out_queue)):
             # Начинается с 1 для матлаба
             part.queue = 1 + index
 
@@ -198,7 +201,7 @@ class Machine:
         [[PART1 - партия, PART2, PART3 ...] - группа партий] , где у PART1 наименьшая очередь
         на следующей установке.
         """
-        self.in_queue.extend(np.reshape(self.out_queue, -1))
+        self.in_queue.extend(np.hstack(self.out_queue))
         self.in_queue.sort(key=lambda x: x.part.next_entity.len_queue)
         self.out_queue = [self.in_queue.copy()]
         # Чистим временную очередь, так как партии, что в нее были
@@ -228,6 +231,8 @@ class Machine:
             # Запись каждой партии её номер в очереди (необходимо для отправки в БД).
             self.set_individual_queue()
             print(self.out_queue)
+            if self.name == 'EPN014':
+                a = 'rferdfgf'
             print(self.name)
 
     # Метод получения количества партий в очереди

@@ -48,7 +48,7 @@ class Part:
 
     # Функция получения МВХ и установки, где партии сейчас надо быть
     @functions.conn_decorator_method
-    def get_other_params(self, cursor=None):
+    def get_other_params(self, cursor=None, conn=None):
         self.current_entity_list = []
         sql = "SELECT m.machines_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `production`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
             self.recipe_id
@@ -61,7 +61,7 @@ class Part:
             self.current_entity_list.append(row['machines_id'])
 
     @functions.conn_decorator_method
-    def get_general_params(self, cursor=None):
+    def get_general_params(self, cursor=None, conn=None):
         sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, " \
               "part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(self.part_id)
         cursor.execute(sql)
@@ -141,7 +141,7 @@ class Part:
 
     # Функция получения прошлой установки
     @functions.conn_decorator_method
-    def get_prev_entity(self, cursor=None):
+    def get_prev_entity(self, cursor=None, conn=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
@@ -163,7 +163,7 @@ class Part:
 
     # Функция получения прошлой установки
     @functions.conn_decorator_method
-    def get_next_entity(self, cursor=None):
+    def get_next_entity(self, cursor=None, conn=None):
         # Ищем все машины, которые могли быть по рецепту следующего шага
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
               "INNER JOIN `production`.recipe ON machines_has_recipe.recipe_recipe_id = recipe.recipe_id " \
@@ -184,7 +184,7 @@ class Part:
 
     # Функция получения времени выполнения текущего рецепта
     @functions.conn_decorator_method
-    def get_current_time(self, cursor=None):
+    def get_current_time(self, cursor=None, conn=None):
         sql = "SELECT time_of_process FROM `production`.recipe WHERE recipe_id={0}".format(
             self.recipe_id
         )
