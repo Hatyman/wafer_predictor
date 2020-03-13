@@ -171,12 +171,12 @@ def global_optimize(cursor=None):
 parts_set = create_parts()  # Вызываем функцию создания партий
 machine_set = create_machines()  # Вызываем функцию создания партий
 while True:
-    a = allow_for_planing()  # Проверка разрешения от модели на планирование
-    if a:
-        t1 = time.clock()  # Время начала планирования (для замера времени работы планировкщика)
-        update_part_info(machine_set, parts_set)  # Обновление всех параметров партий
-        local_optimization(machine_set)  # Работа с очередями
-        send_queue_db(parts_set)  # Отправка очередей
-        disable_for_planing()  # Выставляем флаг для работы модели
-        t2 = time.clock() - t1  # Замер времени
-        print(t2)
+    # a = allow_for_planing()  # Проверка разрешения от модели на планирование
+    # if a:
+    t1 = time.clock()  # Время начала планирования (для замера времени работы планировкщика)
+    update_part_info(machine_set, parts_set)  # Обновление всех параметров партий
+    local_optimization(machine_set)  # Работа с очередями
+    send_queue_db(parts_set)  # Отправка очередей
+    disable_for_planing()  # Выставляем флаг для работы модели
+    t2 = time.clock() - t1  # Замер времени
+    print(t2)

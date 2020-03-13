@@ -3,11 +3,12 @@ import numpy as np
 import sys
 
 
-# Функция подключения к бд
-def connection(pwd='91xz271999'):
+# Функция подключения к бд 91xz271999 jdbc:mysql://localhost:3310/?user=root
+def connection(pwd='Micron_1'):
     # Подключение к бд убрали в обёртку (можно еще продублировать в файл отдельный как функцию)
     connect = pymysql.connect(host='localhost',
                               user='root',
+                              port=3310,
                               password=pwd,
                               # password='91xz271999',
                               db='production',
@@ -71,7 +72,7 @@ def create_parts(cursor=None, conn=None):
 
     for row in res:  # Обходим то, что получили
         # Не работает (разобраться с присвоением переменных в методе класса), надо фиксить:
-        part_id, name, list_id, act_process, queue, reserve, wait, recipe_id, priority = row
+        part_id, name, list_id, act_process, queue, reserve, wait, recipe_id, priority, broken = row
         # Динамически создаем объекты партий
         inner_parts_set.append(part_class.Part(row[part_id], row[name], row[list_id], row[act_process],
               row[queue], row[reserve], row[wait], row[recipe_id],
@@ -195,8 +196,11 @@ def update_part_info(machine_set, parts_set):
                 # Удаление партии из очереди.
                 part.current_entity.out_queue[0].remove(part)
                 # (Защита) Если партий в группе не осталось, удаляем группу.
-                if not len(part.current_entity.out_queue[0] and len(part.current_entity.out_queue > 1)):
+                if not len(part.current_entity.out_queue[0]) and (len(part.current_entity.out_queue) > 1):
                     part.current_entity.out_queue.remove([])
+                if part.current_entity.out_queue == []:
+                    print('Ошибка')
+                    part.current_entity.out_queue = [[]]
         except ValueError:
             pass
         # Если партия уже не в установке, но номер в очереди None и партии нет в очереди текущей установки,

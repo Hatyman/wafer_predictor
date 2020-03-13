@@ -202,7 +202,7 @@ class Machine:
         на следующей установке.
         """
         self.in_queue.extend(np.hstack(self.out_queue))
-        self.in_queue.sort(key=lambda x: x.part.next_entity.len_queue)
+        self.in_queue.sort(key=lambda x: x.next_entity.len_queue)
         self.out_queue = [self.in_queue.copy()]
         # Чистим временную очередь, так как партии, что в нее были
         # добавлены, сортированы и добавлены в out_queue.

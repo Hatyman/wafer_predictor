@@ -1,4 +1,4 @@
-from src.functions import functions
+from src.functions.functions import *
 import sys
 import numpy as np
 
@@ -22,6 +22,8 @@ class Part:
         self.next_entity = 0
         self.time_of_process = 0
         self.current_entity = 0
+        self.start_tl = 0
+        self.current_tl = 0
         self.prev_entity = []
         self.priority = priority
         self.start_process = 0
@@ -47,7 +49,7 @@ class Part:
         print('Создана партия с id {0}: {1} [list_id: {2}]'.format(self.part_id, self.name, self.list_id))
 
     # Функция получения МВХ и установки, где партии сейчас надо быть
-    @functions.conn_decorator_method
+    @conn_decorator_method
     def get_other_params(self, cursor=None, conn=None):
         self.current_entity_list = []
         sql = "SELECT m.machines_id FROM `production`.recipe r INNER JOIN `production`.machines_has_recipe mhr ON r.recipe_id = mhr.recipe_recipe_id INNER JOIN `production`.machines m ON mhr.machines_machines_id = m.machines_id WHERE recipe_id = {0}".format(
@@ -60,7 +62,7 @@ class Part:
         for row in res:
             self.current_entity_list.append(row['machines_id'])
 
-    @functions.conn_decorator_method
+    @conn_decorator_method
     def get_general_params(self, cursor=None, conn=None):
         sql = "SELECT active_process as act_process, queue, wait, reservation as reserve, " \
               "part_recipe_id as recipe_id FROM `production`.part WHERE part_id={0}".format(self.part_id)
@@ -77,18 +79,33 @@ class Part:
         self.current_entity = value
 
     # Функция изменения оставшегося МВХ (на 20 минут) и сигнализирования, если МВХ истекает
-    def dying(self):
+    @conn_decorator_method
+    def tl_check(self, cursor=None, conn=None):
         # Проверяем есть ли вообще МВХ у партии
         if self.time_limit:
             # Проверяем осталось ли МВХ
-            if self.least_tl > (1 / 3):
-                self.least_tl -= 1 / 3
-            else:
+            sql = "SELECT TIME_TO_SEC(create_time) as time FROM `timestamps` ORDER BY create_time DESC LIMIT 1"
+            cursor.execute(sql)
+            self.current_tl = cursor.fetchone()['time']
+
+            delta = self.current_tl - self.start_tl
+            limit = self.time_limit * 60 * 60
+
+            if delta >= limit:
+                sql = f"UPDATE `part` SET broken = 1 WHERE part_id={self.part_id}"
+                cursor.execute(sql)
+                conn.commit()
                 print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2}".format(self.part_id, self.act_process,
                                                                                          self.recipe_id))
 
+            # if self.least_tl > (1 / 3):
+            #     self.least_tl -= 1 / 3
+            # else:
+            #     print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2}".format(self.part_id, self.act_process,
+            #                                                                              self.recipe_id))
+
     # Функция получения времени обработки на следующей установке
-    # @functions.conn_decorator_method
+    # @conn_decorator_method
     # def observe_next_entity(self, cursor=None):
     #
     #     # Получаем рецепт следующего шага
@@ -131,6 +148,7 @@ class Part:
         self.get_general_params()
         self.get_next_entity()
         self.get_prev_entity()
+        self.tl_check()
         self.get_other_params()
         self.get_current_time()
         self.calculate_target_function()
@@ -140,7 +158,7 @@ class Part:
         pass
 
     # Функция получения прошлой установки
-    @functions.conn_decorator_method
+    @conn_decorator_method
     def get_prev_entity(self, cursor=None, conn=None):
         # Ищем все машины, которые могли быть по рецепту предыдущего шага
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
@@ -158,11 +176,14 @@ class Part:
         for cash in res:
             self.prev_entity.append(cash['machines_machines_id'])
             if self.time_limit != cash['time_limit']:
+                sql = f"SELECT TIME_TO_SEC(update_time) as time FROM `timestamps` WHERE id_part={self.part_id} ORDER BY update_time DESC, create_time DESC LIMIT 1"
+                cursor.execute(sql)
+                self.start_tl = cursor.fetchone()['time']
                 self.least_tl = cash['time_limit']
             self.time_limit = cash['time_limit']
 
     # Функция получения прошлой установки
-    @functions.conn_decorator_method
+    @conn_decorator_method
     def get_next_entity(self, cursor=None, conn=None):
         # Ищем все машины, которые могли быть по рецепту следующего шага
         sql = "SELECT machines_machines_id, time_limit FROM `production`.machines_has_recipe " \
@@ -183,7 +204,7 @@ class Part:
         self.next_entity = value
 
     # Функция получения времени выполнения текущего рецепта
-    @functions.conn_decorator_method
+    @conn_decorator_method
     def get_current_time(self, cursor=None, conn=None):
         sql = "SELECT time_of_process FROM `production`.recipe WHERE recipe_id={0}".format(
             self.recipe_id
@@ -194,7 +215,7 @@ class Part:
         self.time_of_process = res['time_of_process']
         return self.time_of_process
 
-    @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
+    @conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def send_queue(self, cursor=None, conn=None):
         if self.queue:
             sql = "UPDATE `production`.part SET queue = {0} WHERE part_id = {1}".format(
@@ -204,7 +225,7 @@ class Part:
             cursor.execute(sql)
             conn.commit()
 
-    @functions.conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
+    @conn_decorator_method  # исходя из примера метод должен обновлять очередь в базе
     def reset_queue(self, cursor=None, conn=None):
         sql = "UPDATE `production`.part SET queue = NULL WHERE part_id = {0}".format(
             self.part_id
