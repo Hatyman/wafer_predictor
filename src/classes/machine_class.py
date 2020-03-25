@@ -230,10 +230,9 @@ class Machine:
                 self.group_recipe_rebuild()
             # Запись каждой партии её номер в очереди (необходимо для отправки в БД).
             self.set_individual_queue()
-            print(self.out_queue)
             if self.name == 'EPN014':
                 a = 'rferdfgf'
-            print(self.name)
+            print(f"На установке {self.name} сейчас {len(np.hstack(self.out_queue))} партий в очереди")
 
     # Метод получения количества партий в очереди
     def get_len_queue(self):

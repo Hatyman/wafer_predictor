@@ -66,7 +66,7 @@ def create_parts(cursor=None, conn=None):
     from src.classes import part_class
     inner_parts_set = []  # Словарь, который будет содержать список всех партий (ключи - их айдишники)
 
-    sql = "SELECT * FROM `production`.part"
+    sql = "SELECT * FROM part"
     cursor.execute(sql)  # Запрашиваем из БД данные
     res = cursor.fetchall()  # Превращаем в удобочитаемый вид
 
@@ -106,8 +106,11 @@ def local_optimization(machines_set):
 
     :param machines_set: Массив доступных установок
     """
+    sum_parts = 0
     for machine in machines_set:
         machine.local_optimizer()
+        sum_parts += len(np.hstack(machine.out_queue))
+    print(f"Всего партий на установках: {sum_parts}")
 
 
 def setting_current_entity(machine_set, parts_set):
@@ -209,6 +212,13 @@ def update_part_info(machine_set, parts_set):
             _, index = min((ent.len_queue, index) for index, ent in enumerate(machine_set) if
                            ent.machine_id in part.current_entity_list)
             # Добавляем партию во временную (ноптимизированную) чередь на установку.
+            if part in np.hstack(part.current_entity.out_queue):
+                for list_part in part.current_entity.out_queue:
+                    try:
+                        list_part.remove(part)
+                    except ValueError:
+                        pass
+
             machine_set[index].add_part_to_queue(part)
             # Записываем соответствующую установку в поле объекта.
             part.set_current_entity(machine_set[index])
@@ -232,3 +242,9 @@ def flag(machine_set, parts_set, item):
             if item == part:
                 flag = False
     return flag
+
+@conn_decorator
+def prepare_bd(cursor=None, conn=None):
+    sql = "UPDATE `part` SET queue = NULL, broken = 0"
+    cursor.execute(sql)
+    conn.commit()

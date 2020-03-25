@@ -41,6 +41,7 @@ class Part:
         self.step = 0
         self.delta_time = 5
         self.factor_A = 0
+        self.del_t = 0
         self.factor_B = 0
         self.group_number = 0
         self.entity_number = 0
@@ -84,44 +85,31 @@ class Part:
         # Проверяем есть ли вообще МВХ у партии
         if self.time_limit:
             # Проверяем осталось ли МВХ
-            sql = "SELECT TIME_TO_SEC(create_time) as time FROM `timestamps` ORDER BY create_time DESC LIMIT 1"
+            sql = "SELECT TIME_TO_SEC(create_time) as time FROM `timestamps` ORDER BY TIME_TO_SEC(create_time) DESC LIMIT 1"
             cursor.execute(sql)
-            self.current_tl = cursor.fetchone()['time']
+            try:
+                mem_current_tl = self.current_tl
+                self.current_tl = cursor.fetchone()['time']
+                if not self.wait and self.time_limit:
+                    self.start_tl += self.current_tl - mem_current_tl
+            except TypeError:
+                self.current_tl = 0
 
+
+            # print(f"current_tl {self.current_tl}, start_tl {self.start_tl}")
             delta = self.current_tl - self.start_tl
             limit = self.time_limit * 60 * 60
 
-            if delta >= limit:
+            print(f"Модельное время: {self.current_tl}: Время начала МВХ {limit} у партии {self.part_id}: {self.start_tl} (Осталось {limit - delta})")
+
+            if delta >= limit and self.wait:
                 sql = f"UPDATE `part` SET broken = 1 WHERE part_id={self.part_id}"
                 cursor.execute(sql)
                 conn.commit()
-                print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2}".format(self.part_id, self.act_process,
-                                                                                         self.recipe_id))
+                print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2} c МВХ {3}".format(self.part_id, self.act_process,
+                                                                                         self.recipe_id, self.time_limit))
 
-            # if self.least_tl > (1 / 3):
-            #     self.least_tl -= 1 / 3
-            # else:
-            #     print("Пришел звиздец партии с id {0} на шаге {1} на рецепте {2}".format(self.part_id, self.act_process,
-            #                                                                              self.recipe_id))
 
-    # Функция получения времени обработки на следующей установке
-    # @conn_decorator_method
-    # def observe_next_entity(self, cursor=None):
-    #
-    #     # Получаем рецепт следующего шага
-    #     sql = "SELECT `{0}` FROM `sosable_v0.6`.list WHERE list_id = {1}".format(int(self.act_process) + 1, self.list_id)
-    #     cursor.execute(sql)
-    #     res = cursor.fetchone()
-    #
-    #     # Так мы динамически зайдем в словарь проще всего
-    #     for key, val in res.items():
-    #         sql = "SELECT time_of_process FROM `sosable_v0.6`.recipe WHERE recipe_id = {0}".format(val)
-    #
-    #     # Получаем время следующего шага
-    #     cursor.execute(sql)
-    #     res = cursor.fetchone()
-    #
-    #     self.further_time = int(res['time_of_process'])
 
     def update_attr(self):
         """
@@ -176,9 +164,13 @@ class Part:
         for cash in res:
             self.prev_entity.append(cash['machines_machines_id'])
             if self.time_limit != cash['time_limit']:
-                sql = f"SELECT TIME_TO_SEC(update_time) as time FROM `timestamps` WHERE id_part={self.part_id} ORDER BY update_time DESC, create_time DESC LIMIT 1"
+                sql = f"SELECT TIME_TO_SEC(update_time) as time FROM `timestamps` WHERE id_part={self.part_id} ORDER BY TIME_TO_SEC(update_time) DESC, TIME_TO_SEC(create_time) DESC LIMIT 1"
                 cursor.execute(sql)
-                self.start_tl = cursor.fetchone()['time']
+                try:
+                    self.start_tl = cursor.fetchone()['time']
+                except TypeError:
+                    self.start_tl = 0
+                self.start_tl = self.start_tl or 0
                 self.least_tl = cash['time_limit']
             self.time_limit = cash['time_limit']
 
@@ -252,8 +244,9 @@ class Part:
         # Если есть МВХ, включаем экспоненциальную составляющую
         if self.time_limit:
             self.factor_B = 1
+            self.del_t = (self.current_tl - self.start_tl) / 3600
         else:
             self.factor_B = 0
         self.target_function = self.step * self.delta_time * self.factor_A + \
-            np.exp(self.step * self.delta_time) * self.factor_B
+            np.exp(self.del_t) * self.factor_B
         self.step += 1
